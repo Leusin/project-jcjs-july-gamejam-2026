@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://dsst5d2xcvb3d"]
+
+[ext_resource type="Script" uid="uid://c2o56tr27vo20" path="res://src/gameplay/note.gd" id="1_yn68x"]
+[ext_resource type="Texture2D" uid="uid://dhe125u5pp1si" path="res://assets/sprites/moth_man_run_1.png" id="2_cttrs"]
+[ext_resource type="Texture2D" uid="uid://bsjdlpjtrmjde" path="res://assets/sprites/moth_man_burn_1.png" id="2_ticqg"]
+[ext_resource type="Texture2D" uid="uid://cc6vtnahra03s" path="res://assets/sprites/moth_man_run_2.png" id="3_53px2"]
+[ext_resource type="Texture2D" uid="uid://b4i1es61g25ob" path="res://assets/sprites/moth_man_burn_2.png" id="3_yxqba"]
+[ext_resource type="Texture2D" uid="uid://bcwepk3ickrok" path="res://assets/sprites/moth_man_run_3.png" id="4_wvcvx"]
+[ext_resource type="Texture2D" uid="uid://egul6n3yw3c4" path="res://assets/sprites/moth_man_run_4.png" id="5_ticqg"]
+[ext_resource type="Texture2D" uid="uid://cnfmimi2lixw3" path="res://assets/sprites/moth_man_run_5.png" id="6_yxqba"]
+[ext_resource type="Texture2D" uid="uid://bnnw0fgseee7r" path="res://assets/sprites/moth_man_run_6.png" id="7_ff2vs"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_g4v7s"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_ticqg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_yxqba")
+}],
+"loop": 1,
+"name": &"burn",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_cttrs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_53px2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_wvcvx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_ticqg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_yxqba")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_ff2vs")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 8.0
+}]
+
+[node name="note" type="Node2D" unique_id=1560070593]
+script = ExtResource("1_yn68x")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1813954867]
+position = Vector2(0, 4)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_g4v7s")
+animation = &"burn"
+autoplay = "default"
+frame_progress = 0.9992715
+speed_scale = 2.0

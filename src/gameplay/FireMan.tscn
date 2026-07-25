@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bxs2jilsgmry3"]
+
+[ext_resource type="Script" uid="uid://cqoa2stlc2g0n" path="res://src/gameplay/fire_man.gd" id="1_ktdrg"]
+[ext_resource type="Texture2D" uid="uid://dfgawn86lgte6" path="res://assets/sprites/fire_man_idle_1.png" id="2_cntsw"]
+[ext_resource type="Texture2D" uid="uid://yauj4lstfcuu" path="res://assets/sprites/fire_man_idle_2.png" id="3_08vt1"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_d0u6y"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_cntsw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_08vt1")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 8.0
+}]
+
+[node name="HitPoint" type="Marker2D" unique_id=141709498]
+script = ExtResource("1_ktdrg")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1672951229]
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_d0u6y")
+autoplay = "default"

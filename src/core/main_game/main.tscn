@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bcyium1l4ty04"]
+
+[ext_resource type="Script" uid="uid://clor3kgbkdbfe" path="res://src/core/main_game/main.gd" id="1_8jwtq"]
+[ext_resource type="PackedScene" uid="uid://bxs2jilsgmry3" path="res://src/gameplay/FireMan.tscn" id="2_8jwtq"]
+[ext_resource type="PackedScene" path="res://src/debug/debug_overlay.tscn" id="3_h7gx0"]
+
+[node name="Main" type="Node2D" unique_id=1968898500]
+script = ExtResource("1_8jwtq")
+
+[node name="HitPoint" parent="." unique_id=141709498 instance=ExtResource("2_8jwtq")]
+position = Vector2(320, 180)
+
+[node name="SpawnPoints" type="Node2D" parent="." unique_id=235518348]
+
+[node name="SpawnLeft" type="Marker2D" parent="SpawnPoints" unique_id=1422884889]
+position = Vector2(0, 180)
+
+[node name="SpawnRight" type="Marker2D" parent="SpawnPoints" unique_id=378890909]
+position = Vector2(640, 180)
+
+[node name="SpawnTop" type="Marker2D" parent="SpawnPoints" unique_id=1298295102]
+position = Vector2(320, 0)
+
+[node name="SpawnBottom" type="Marker2D" parent="SpawnPoints" unique_id=1849863009]
+position = Vector2(320, 360)
+
+[node name="DebugOverlay" parent="." unique_id=1714306467 instance=ExtResource("3_h7gx0")]
