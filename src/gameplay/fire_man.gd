@@ -20,6 +20,21 @@ func take_damage() -> void:
 	shake.tween_property(_character_sprite, "offset", Vector2(-16, 0), 0.04)
 	shake.tween_property(_character_sprite, "offset", Vector2.ZERO, 0.04)
 
+## 승리 연출: 불길이 크게 타오른다.
+func celebrate() -> void:
+	var t := create_tween().set_parallel()
+	t.tween_property(_light, "scale", _light_base * 2.2, 1.0).set_trans(Tween.TRANS_ELASTIC)
+	t.tween_property(_character_sprite, "modulate", Color(1.4, 1.2, 0.8), 1.0)
+	_light_base *= 2.2   # 일렁임이 커진 크기를 기준으로 계속되도록
+
+## 게임오버 연출: 불이 서서히 꺼진다.
+func extinguish() -> void:
+	set_process(false)   # 일렁임 정지
+	var t := create_tween().set_parallel()
+	t.tween_property(_light, "scale", Vector2.ZERO, 1.2)
+	t.tween_property(_shadow, "scale", Vector2.ZERO, 1.2)
+	t.tween_property(_character_sprite, "modulate", Color(0.25, 0.25, 0.3), 1.2)
+
 func _ready() -> void:
 	_light_base = _light.scale
 	_shadow_base = _shadow.scale

@@ -53,7 +53,6 @@ script = ExtResource("1_yn68x")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1813954867]
 position = Vector2(0, 8)
 sprite_frames = SubResource("SpriteFrames_g4v7s")
+animation = &"burn"
 autoplay = "default"
-frame_progress = 0.7137486
 speed_scale = 2.0
-offset = Vector2(0, -30)

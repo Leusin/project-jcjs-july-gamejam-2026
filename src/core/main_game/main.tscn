@@ -5,6 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://c7ml0kan4qwy7" path="res://src/debug/debug_overlay.tscn" id="3_h7gx0"]
 [ext_resource type="Script" uid="uid://dbgphtmug2jgj" path="res://src/core/conductor.gd" id="4_xijci"]
 [ext_resource type="AudioStream" uid="uid://c2cgoyxws53i2" path="res://assets/audio/jcjs_july_jam_2026_moth_theme_v01.wav" id="5_yuwmb"]
+[ext_resource type="Script" path="res://src/core/main_game/chart.gd" id="6_chart"]
+[ext_resource type="Script" path="res://src/core/main_game/hud.gd" id="7_hud"]
+[ext_resource type="Script" path="res://src/debug/judgement_overlay.gd" id="8_jrange"]
 
 [node name="Main" type="Node2D" unique_id=1968898500]
 script = ExtResource("1_8jwtq")
@@ -26,7 +29,15 @@ position = Vector2(640, 0)
 [node name="SpawnBottom" type="Marker2D" parent="SpawnPoints" unique_id=1849863009]
 position = Vector2(640, 720)
 
+[node name="Chart" type="Node" parent="." unique_id=1520043775]
+script = ExtResource("6_chart")
+
+[node name="JudgementOverlay" type="Node2D" parent="." unique_id=1520043776]
+z_index = 20
+script = ExtResource("8_jrange")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1045942636]
+script = ExtResource("7_hud")
 
 [node name="ScoreLabel" type="Label" parent="CanvasLayer" unique_id=2121135264]
 offset_left = 16.0
@@ -49,6 +60,133 @@ grow_horizontal = 0
 theme_override_font_sizes/font_size = 32
 text = "Combo:0000"
 horizontal_alignment = 2
+
+[node name="HealthLabel" type="Label" parent="CanvasLayer" unique_id=1520043771]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 16.0
+offset_right = 200.0
+offset_bottom = 62.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "HP 5 / 5"
+horizontal_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="CanvasLayer" unique_id=1520043774]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 60.0
+offset_right = 200.0
+offset_bottom = 96.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 24
+text = "3:00 남음"
+horizontal_alignment = 1
+
+[node name="JudgementLabel" type="Label" parent="CanvasLayer" unique_id=1520043773]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -190.0
+offset_right = 200.0
+offset_bottom = -130.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 44
+text = "PERFECT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameOverLabel" type="Label" parent="CanvasLayer" unique_id=1520043772]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -160.0
+offset_right = 360.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "GAME OVER"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TitleScreen" type="Control" parent="CanvasLayer" unique_id=1520043780]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="CanvasLayer/TitleScreen" unique_id=1520043781]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="TitleLabel" type="Label" parent="CanvasLayer/TitleScreen" unique_id=1520043782]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -220.0
+offset_right = 400.0
+offset_bottom = -110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 80
+text = "불나방"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="CanvasLayer/TitleScreen" unique_id=1520043783]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -100.0
+offset_right = 400.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 26
+text = "박자에 맞춰 클릭하거나 스페이스를 눌러 나방을 태우세요
+3분을 버티면 아침이 옵니다"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartButton" type="Button" parent="CanvasLayer/TitleScreen" unique_id=1520043784]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -130.0
+offset_top = 60.0
+offset_right = 130.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 36
+text = "시작"
 
 [node name="DebugOverlay" parent="." unique_id=1714306467 instance=ExtResource("3_h7gx0")]
 
