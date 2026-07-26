@@ -33,6 +33,7 @@ func _ready() -> void:
 	queue_redraw()
 	_spawn_note()
 	_update_ui()
+	$Conductor.start_song()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _is_tap(event):
