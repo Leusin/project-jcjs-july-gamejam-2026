@@ -5,12 +5,44 @@
 [ext_resource type="PackedScene" uid="uid://c7ml0kan4qwy7" path="res://src/debug/debug_overlay.tscn" id="3_h7gx0"]
 [ext_resource type="Script" uid="uid://dbgphtmug2jgj" path="res://src/core/conductor.gd" id="4_xijci"]
 [ext_resource type="AudioStream" uid="uid://c2cgoyxws53i2" path="res://assets/audio/jcjs_july_jam_2026_moth_theme_v01.wav" id="5_yuwmb"]
-[ext_resource type="Script" path="res://src/core/main_game/chart.gd" id="6_chart"]
-[ext_resource type="Script" path="res://src/core/main_game/hud.gd" id="7_hud"]
-[ext_resource type="Script" path="res://src/debug/judgement_overlay.gd" id="8_jrange"]
+[ext_resource type="Script" uid="uid://b5gnfgge2sbqx" path="res://src/core/main_game/chart.gd" id="6_chart"]
+[ext_resource type="Script" uid="uid://bj86i7uyu2300" path="res://src/core/main_game/hud.gd" id="7_hud"]
+[ext_resource type="Texture2D" path="res://assets/sprites/background_sine_giants.png" id="8_passers_texture"]
+[ext_resource type="Script" path="res://src/visual/background_passers.gd" id="9_passers_script"]
+
+[sub_resource type="GDScript" id="GDScript_8l6nt"]
+script/source = "extends Node2D
+## 판정 범위 띠를 불인간 조명 **위에** 그린다.
+##
+## Main의 _draw()로 그리면 안 보인다. Godot은 부모를 먼저 그리고 자식을 그 위에 덮는데,
+## 불인간의 LightSprite2D(356px, 가산 블렌드)가 자식이라 띠(약 114px)를 통째로 삼켜버린다.
+## 그래서 z_index를 올린 별도 노드로 뺐다.
+##
+## 무엇을 그릴지는 Main이 정한다(꺼져 있으면 빈 목록을 준다). 이 노드는 받아서 그리기만 한다.
+
+@export var band_width: float = 36.0
+
+func _process(_delta: float) -> void:
+	queue_redraw()
+
+func _draw() -> void:
+	var main := get_parent()
+	if main == null or not main.has_method(\"judgement_bands\"):
+		return
+	for band in main.judgement_bands():
+		draw_line(band[\"a\"], band[\"b\"], band[\"color\"], band_width)
+"
 
 [node name="Main" type="Node2D" unique_id=1968898500]
 script = ExtResource("1_8jwtq")
+
+[node name="BackgroundPassers" type="Sprite2D" parent="." unique_id=1981734501]
+z_index = -10
+modulate = Color(1, 1, 1, 0.16)
+position = Vector2(-380, 350)
+scale = Vector2(0.23, 0.23)
+texture = ExtResource("8_passers_texture")
+script = ExtResource("9_passers_script")
 
 [node name="HitPoint" parent="." unique_id=141709498 instance=ExtResource("2_8jwtq")]
 position = Vector2(640, 360)
@@ -34,7 +66,7 @@ script = ExtResource("6_chart")
 
 [node name="JudgementOverlay" type="Node2D" parent="." unique_id=1520043776]
 z_index = 20
-script = ExtResource("8_jrange")
+script = SubResource("GDScript_8l6nt")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1045942636]
 script = ExtResource("7_hud")
@@ -124,6 +156,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="TitleScreen" type="Control" parent="CanvasLayer" unique_id=1520043780]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -131,7 +164,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Dim" type="ColorRect" parent="CanvasLayer/TitleScreen" unique_id=1520043781]
-anchors_preset = 15
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -139,7 +172,7 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0.6)
 
 [node name="TitleLabel" type="Label" parent="CanvasLayer/TitleScreen" unique_id=1520043782]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -156,7 +189,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="SubtitleLabel" type="Label" parent="CanvasLayer/TitleScreen" unique_id=1520043783]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -164,7 +197,6 @@ anchor_bottom = 0.5
 offset_left = -400.0
 offset_top = -100.0
 offset_right = 400.0
-offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 26
@@ -174,7 +206,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="StartButton" type="Button" parent="CanvasLayer/TitleScreen" unique_id=1520043784]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

@@ -7,12 +7,19 @@ extends Marker2D
 @onready var _light: Sprite2D = $LightSprite2D
 @onready var _shadow: Sprite2D = $ShadowSprite2D
 
+## 맞은 순간 짧게 때리는 소리. 메트로놈과 같은 음원을 낮춰 쓴다 —
+## 박자 위에서 얻어맞는 게임이라 같은 계열 소리가 오히려 손맛으로 붙는다.
+@export var hit_pitch: float = 0.6
+@export var hit_volume_db: float = -2.0
+
 var _flicker_t: float = 0.0
 var _light_base: Vector2
 var _shadow_base: Vector2
+var _hit_sound: AudioStreamPlayer
 
-## Main이 Miss 판정 시 호출. 빨강 플래시 + 짧은 흔들림.
+## Main이 Miss 판정 시 호출. 빨강 플래시 + 짧은 흔들림 + 타격음.
 func take_damage() -> void:
+	_hit_sound.play()
 	_character_sprite.modulate = Color(1.0, 0.3, 0.3)
 	create_tween().tween_property(_character_sprite, "modulate", Color.WHITE, 0.3)
 	var shake := create_tween()
@@ -38,6 +45,11 @@ func extinguish() -> void:
 func _ready() -> void:
 	_light_base = _light.scale
 	_shadow_base = _shadow.scale
+	_hit_sound = AudioStreamPlayer.new()
+	_hit_sound.stream = load("res://assets/audio/debug_click.wav")
+	_hit_sound.pitch_scale = hit_pitch
+	_hit_sound.volume_db = hit_volume_db
+	add_child(_hit_sound)
 
 func _process(delta: float) -> void:
 	_flicker_t += delta

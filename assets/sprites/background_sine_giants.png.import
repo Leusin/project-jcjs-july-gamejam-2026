@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://5pfdf6h33py5"
-path="res://.godot/imported/marshaller_idle.png-0c71f3e0070f8c44e5a2f666cad96e6f.ctex"
+uid="uid://dk5vnqhegx5xk"
+path="res://.godot/imported/background_sine_giants.png-a419093353592f5a1dda506c95eca12b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/marshaller_idle.png"
-dest_files=["res://.godot/imported/marshaller_idle.png-0c71f3e0070f8c44e5a2f666cad96e6f.ctex"]
+source_file="res://assets/sprites/background_sine_giants.png"
+dest_files=["res://.godot/imported/background_sine_giants.png-a419093353592f5a1dda506c95eca12b.ctex"]
 
 [params]
 

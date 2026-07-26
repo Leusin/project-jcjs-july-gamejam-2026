@@ -7,7 +7,9 @@ extends Node
 @export var manual_offset: float = 0.0
 @export var loop_beats: float = 4.0   # 루프 한 바퀴가 몇 박인가
 ## 디버그용 박자 클릭. 음악과 맞물려 들리면 시계가 정확한 것이다.
-@export var metronome: bool = true
+## 평소엔 끈다 — 피격음이 같은 음원을 쓰기 때문에 켜두면 둘이 섞여 안 들린다.
+## manual_offset을 맞출 때만 잠깐 켠다.
+@export var metronome: bool = false
 
 var sec_per_beat: float = 0.0
 var song_position: float = 0.0           # 곡 시작으로부터 몇 초

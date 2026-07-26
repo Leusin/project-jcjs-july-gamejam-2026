@@ -9,6 +9,10 @@
 [ext_resource type="Texture2D" uid="uid://egul6n3yw3c4" path="res://assets/sprites/moth_man_run_4.png" id="5_ticqg"]
 [ext_resource type="Texture2D" uid="uid://cnfmimi2lixw3" path="res://assets/sprites/moth_man_run_5.png" id="6_yxqba"]
 [ext_resource type="Texture2D" uid="uid://bnnw0fgseee7r" path="res://assets/sprites/moth_man_run_6.png" id="7_ff2vs"]
+[ext_resource type="Texture2D" uid="uid://btxe8gpyvidss" path="res://assets/sprites/moth_man_sin_1.png" id="10_ff2vs"]
+[ext_resource type="Texture2D" uid="uid://c0vibp4ceo54y" path="res://assets/sprites/moth_man_sin_2.png" id="11_2dcmj"]
+[ext_resource type="Texture2D" uid="uid://lny8b12y8g6i" path="res://assets/sprites/heal_man_1.png" id="12_heal1"]
+[ext_resource type="Texture2D" uid="uid://cwgt00mudyb5d" path="res://assets/sprites/heal_man_2.png" id="13_heal2"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_g4v7s"]
 animations = [{
@@ -45,6 +49,28 @@ animations = [{
 "loop": 1,
 "name": &"default",
 "speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_heal1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_heal2")
+}],
+"loop": 1,
+"name": &"heal",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_ff2vs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_2dcmj")
+}],
+"loop": 1,
+"name": &"sine",
+"speed": 8.0
 }]
 
 [node name="note" type="Node2D" unique_id=1560070593]
@@ -53,6 +79,7 @@ script = ExtResource("1_yn68x")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1813954867]
 position = Vector2(0, 8)
 sprite_frames = SubResource("SpriteFrames_g4v7s")
-animation = &"burn"
+animation = &"sine"
 autoplay = "default"
+frame_progress = 0.874612
 speed_scale = 2.0
