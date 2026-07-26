@@ -4,6 +4,37 @@
 [ext_resource type="Texture2D" uid="uid://dfgawn86lgte6" path="res://assets/sprites/fire_man_idle_1.png" id="2_cntsw"]
 [ext_resource type="Texture2D" uid="uid://yauj4lstfcuu" path="res://assets/sprites/fire_man_idle_2.png" id="3_08vt1"]
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3gngh"]
+blend_mode = 2
+
+[sub_resource type="Gradient" id="Gradient_cntsw"]
+offsets = PackedFloat32Array(0, 0.7)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+metadata/_snap_enabled = true
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_d0u6y"]
+gradient = SubResource("Gradient_cntsw")
+width = 32
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_d0u6y"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_ktdrg"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.7)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+metadata/_snap_enabled = true
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_57qmd"]
+gradient = SubResource("Gradient_ktdrg")
+width = 178
+height = 178
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_d0u6y"]
 animations = [{
 "frames": [{
@@ -21,7 +52,20 @@ animations = [{
 [node name="HitPoint" type="Marker2D" unique_id=141709498]
 script = ExtResource("1_ktdrg")
 
+[node name="ShadowSprite2D" type="Sprite2D" parent="." unique_id=1005909401]
+z_index = -1
+material = SubResource("CanvasItemMaterial_3gngh")
+position = Vector2(0, 30)
+texture = SubResource("GradientTexture2D_d0u6y")
+
+[node name="LightSprite2D" type="Sprite2D" parent="." unique_id=1259254882]
+modulate = Color(1, 0.827451, 0.36078432, 1)
+self_modulate = Color(1, 0.9647059, 0.8392157, 1)
+material = SubResource("CanvasItemMaterial_d0u6y")
+texture = SubResource("GradientTexture2D_57qmd")
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1672951229]
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_d0u6y")
 autoplay = "default"
+frame_progress = 0.92242306

@@ -1,13 +1,15 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://c7ml0kan4qwy7"]
 
-[ext_resource type="Script" path="res://src/debug/debug_overlay.gd" id="1_dbg"]
+[ext_resource type="Script" uid="uid://b3drv5veg5gc2" path="res://src/debug/debug_overlay.gd" id="1_dbg"]
 
-[node name="DebugOverlay" type="CanvasLayer"]
-layer = 128
+[node name="DebugOverlay" type="CanvasLayer" unique_id=1955550707]
 process_mode = 3
+layer = 128
 script = ExtResource("1_dbg")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=1848446030]
 offset_left = 8.0
-offset_top = 4.0
+offset_top = 330.0
+offset_right = 36.0
+offset_bottom = 353.0
 text = "FPS"

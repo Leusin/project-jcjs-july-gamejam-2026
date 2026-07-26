@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var speed: float = 120.0
+@export var speed: float = 220.0
 @export var direction: Vector2 = Vector2.RIGHT
 @export var radius: float = 20.0
 @export var fall_gravity: float = 500.0

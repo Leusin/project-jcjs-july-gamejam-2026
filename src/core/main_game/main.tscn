@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://clor3kgbkdbfe" path="res://src/core/main_game/main.gd" id="1_8jwtq"]
 [ext_resource type="PackedScene" uid="uid://bxs2jilsgmry3" path="res://src/gameplay/FireMan.tscn" id="2_8jwtq"]
-[ext_resource type="PackedScene" path="res://src/debug/debug_overlay.tscn" id="3_h7gx0"]
+[ext_resource type="PackedScene" uid="uid://c7ml0kan4qwy7" path="res://src/debug/debug_overlay.tscn" id="3_h7gx0"]
 
 [node name="Main" type="Node2D" unique_id=1968898500]
 script = ExtResource("1_8jwtq")
@@ -23,5 +23,27 @@ position = Vector2(320, 0)
 
 [node name="SpawnBottom" type="Marker2D" parent="SpawnPoints" unique_id=1849863009]
 position = Vector2(320, 360)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1045942636]
+
+[node name="ScoreLabel" type="Label" parent="CanvasLayer" unique_id=2121135264]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 110.0
+offset_bottom = 57.0
+text = "Score:000000
+"
+
+[node name="ComboLabel" type="Label" parent="CanvasLayer" unique_id=694867683]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -104.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 31.0
+grow_horizontal = 0
+text = "Combo:0000"
+horizontal_alignment = 2
 
 [node name="DebugOverlay" parent="." unique_id=1714306467 instance=ExtResource("3_h7gx0")]
