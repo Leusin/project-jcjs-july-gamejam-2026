@@ -10,29 +10,30 @@
 script = ExtResource("1_8jwtq")
 
 [node name="HitPoint" parent="." unique_id=141709498 instance=ExtResource("2_8jwtq")]
-position = Vector2(320, 180)
+position = Vector2(640, 360)
 
 [node name="SpawnPoints" type="Node2D" parent="." unique_id=235518348]
 
 [node name="SpawnLeft" type="Marker2D" parent="SpawnPoints" unique_id=1422884889]
-position = Vector2(0, 180)
+position = Vector2(0, 360)
 
 [node name="SpawnRight" type="Marker2D" parent="SpawnPoints" unique_id=378890909]
-position = Vector2(640, 180)
+position = Vector2(1280, 360)
 
 [node name="SpawnTop" type="Marker2D" parent="SpawnPoints" unique_id=1298295102]
-position = Vector2(320, 0)
+position = Vector2(640, 0)
 
 [node name="SpawnBottom" type="Marker2D" parent="SpawnPoints" unique_id=1849863009]
-position = Vector2(320, 360)
+position = Vector2(640, 720)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1045942636]
 
 [node name="ScoreLabel" type="Label" parent="CanvasLayer" unique_id=2121135264]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 110.0
-offset_bottom = 57.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 220.0
+offset_bottom = 114.0
+theme_override_font_sizes/font_size = 32
 text = "Score:000000
 "
 
@@ -40,11 +41,12 @@ text = "Score:000000
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -104.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 31.0
+offset_left = -208.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 62.0
 grow_horizontal = 0
+theme_override_font_sizes/font_size = 32
 text = "Combo:0000"
 horizontal_alignment = 2
 

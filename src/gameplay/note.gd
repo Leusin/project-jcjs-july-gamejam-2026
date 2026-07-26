@@ -1,9 +1,9 @@
 extends Node2D
 
-@export var speed: float = 220.0
+@export var speed: float = 440.0
 @export var direction: Vector2 = Vector2.RIGHT
-@export var radius: float = 20.0
-@export var fall_gravity: float = 500.0
+@export var radius: float = 40.0
+@export var fall_gravity: float = 1000.0
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
@@ -38,7 +38,7 @@ func burn() -> void:
 ## 어둠으로 추락하며 스스로 사라진다.
 func fall() -> void:
 	_falling = true
-	_fall_velocity = Vector2(direction.x * 40.0, -120.0)
+	_fall_velocity = Vector2(direction.x * 80.0, -240.0)
 	var t := create_tween()
 	t.tween_property(_sprite, "modulate", Color(0.3, 0.3, 0.4, 0.0), 0.8)
 	t.parallel().tween_property(_sprite, "rotation", _sprite.rotation + 4.0, 0.8)

@@ -8,9 +8,9 @@ enum Judgement
 	MISS 
 }
 
-@export var perfect_distance: float = 24.0
-@export var good_distance: float = 64.0
-@export var miss_distance: float = 100.0
+@export var perfect_distance: float = 48.0
+@export var good_distance: float = 128.0
+@export var miss_distance: float = 200.0
 @export var perfect_score: int = 5
 @export var good_score: int = 1
 
@@ -70,9 +70,9 @@ func _draw() -> void:
 	if _hit_point == null:
 		return
 	var c := _hit_point.global_position
-	draw_arc(c, perfect_distance, 0.0, TAU, 64, Color(0.3, 1.0, 0.4), 2.0)
-	draw_arc(c, good_distance, 0.0, TAU, 64, Color(1.0, 0.9, 0.3), 2.0)
-	draw_arc(c, miss_distance, 0.0, TAU, 64, Color(1.0, 0.4, 0.4), 2.0)
+	draw_arc(c, perfect_distance, 0.0, TAU, 64, Color(0.3, 1.0, 0.4), 4.0)
+	draw_arc(c, good_distance, 0.0, TAU, 64, Color(1.0, 0.9, 0.3), 4.0)
+	draw_arc(c, miss_distance, 0.0, TAU, 64, Color(1.0, 0.4, 0.4), 4.0)
 
 func _on_success() -> void:
 	var note := _note

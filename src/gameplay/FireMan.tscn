@@ -14,8 +14,8 @@ metadata/_snap_enabled = true
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_d0u6y"]
 gradient = SubResource("Gradient_cntsw")
-width = 32
-height = 16
+width = 64
+height = 32
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
@@ -30,8 +30,8 @@ metadata/_snap_enabled = true
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_57qmd"]
 gradient = SubResource("Gradient_ktdrg")
-width = 178
-height = 178
+width = 356
+height = 356
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
@@ -55,7 +55,7 @@ script = ExtResource("1_ktdrg")
 [node name="ShadowSprite2D" type="Sprite2D" parent="." unique_id=1005909401]
 z_index = -1
 material = SubResource("CanvasItemMaterial_3gngh")
-position = Vector2(0, 30)
+position = Vector2(0, 60)
 texture = SubResource("GradientTexture2D_d0u6y")
 
 [node name="LightSprite2D" type="Sprite2D" parent="." unique_id=1259254882]
@@ -65,7 +65,6 @@ material = SubResource("CanvasItemMaterial_d0u6y")
 texture = SubResource("GradientTexture2D_57qmd")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1672951229]
-scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_d0u6y")
 autoplay = "default"
 frame_progress = 0.92242306

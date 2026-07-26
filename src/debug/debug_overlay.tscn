@@ -8,8 +8,9 @@ layer = 128
 script = ExtResource("1_dbg")
 
 [node name="Label" type="Label" parent="." unique_id=1848446030]
-offset_left = 8.0
-offset_top = 330.0
-offset_right = 36.0
-offset_bottom = 353.0
+offset_left = 16.0
+offset_top = 630.0
+offset_right = 200.0
+offset_bottom = 706.0
+theme_override_font_sizes/font_size = 24
 text = "FPS"

@@ -16,8 +16,8 @@ func take_damage() -> void:
 	_character_sprite.modulate = Color(1.0, 0.3, 0.3)
 	create_tween().tween_property(_character_sprite, "modulate", Color.WHITE, 0.3)
 	var shake := create_tween()
-	shake.tween_property(_character_sprite, "offset", Vector2(8, 0), 0.04)
-	shake.tween_property(_character_sprite, "offset", Vector2(-8, 0), 0.04)
+	shake.tween_property(_character_sprite, "offset", Vector2(16, 0), 0.04)
+	shake.tween_property(_character_sprite, "offset", Vector2(-16, 0), 0.04)
 	shake.tween_property(_character_sprite, "offset", Vector2.ZERO, 0.04)
 
 func _ready() -> void:
