@@ -14,3 +14,6 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Obsidian 보관함 설정 (문서 본문만 추적한다)
+docs/.obsidian/

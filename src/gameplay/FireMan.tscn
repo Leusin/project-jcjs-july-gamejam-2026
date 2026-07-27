@@ -1,8 +1,18 @@
 [gd_scene format=3 uid="uid://bxs2jilsgmry3"]
 
 [ext_resource type="Script" uid="uid://cqoa2stlc2g0n" path="res://src/gameplay/fire_man.gd" id="1_ktdrg"]
+[ext_resource type="Texture2D" uid="uid://be1lxsa7qpaj1" path="res://assets/sprites/fire_man_dance_bob_1.png" id="2_al4t1"]
 [ext_resource type="Texture2D" uid="uid://dfgawn86lgte6" path="res://assets/sprites/fire_man_idle_1.png" id="2_cntsw"]
 [ext_resource type="Texture2D" uid="uid://yauj4lstfcuu" path="res://assets/sprites/fire_man_idle_2.png" id="3_08vt1"]
+[ext_resource type="Texture2D" uid="uid://dpxe0piqypk20" path="res://assets/sprites/fire_man_dance_bob_2.png" id="3_juvtu"]
+[ext_resource type="Texture2D" uid="uid://dyvc2mn6v8gff" path="res://assets/sprites/fire_man_dance_flailing_3.png" id="4_koyl4"]
+[ext_resource type="Texture2D" uid="uid://0pqywujt5nvn" path="res://assets/sprites/fire_man_dance_flailing_4.png" id="5_m5far"]
+[ext_resource type="Texture2D" uid="uid://drq82l86qd4uu" path="res://assets/sprites/fire_man_dance_flailing_5.png" id="6_4ojmf"]
+[ext_resource type="Texture2D" uid="uid://dfo0b2gjquno6" path="res://assets/sprites/fire_man_dance_flailing_6.png" id="7_x6tho"]
+[ext_resource type="Texture2D" uid="uid://bshi1n3n8st46" path="res://assets/sprites/fire_man_dance_hop_7.png" id="8_rixfm"]
+[ext_resource type="Texture2D" uid="uid://cm18usonjs2ni" path="res://assets/sprites/fire_man_dance_hop_8.png" id="9_psfh2"]
+[ext_resource type="Texture2D" uid="uid://bigexvh7il867" path="res://assets/sprites/fire_man_head_1.png" id="10_head1"]
+[ext_resource type="Texture2D" uid="uid://bbbjng2ft4lxm" path="res://assets/sprites/fire_man_head_2.png" id="11_head2"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3gngh"]
 blend_mode = 2
@@ -14,7 +24,6 @@ metadata/_snap_enabled = true
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_d0u6y"]
 gradient = SubResource("Gradient_cntsw")
-width = 64
 height = 32
 fill = 1
 fill_from = Vector2(0.5, 0.5)
@@ -39,10 +48,119 @@ fill_from = Vector2(0.5, 0.5)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("2_al4t1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_juvtu")
+}],
+"loop": 1,
+"name": &"dance_bob",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_koyl4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_m5far")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_4ojmf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_x6tho")
+}],
+"loop": 1,
+"name": &"dance_flailing",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_al4t1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_juvtu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_al4t1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_juvtu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_koyl4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_m5far")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_4ojmf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_x6tho")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_koyl4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_m5far")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_4ojmf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_x6tho")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_koyl4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_psfh2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_rixfm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_psfh2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_rixfm")
+}],
+"loop": 1,
+"name": &"dance_full",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_rixfm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_psfh2")
+}],
+"loop": 1,
+"name": &"dance_hop",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("2_cntsw")
 }, {
 "duration": 1.0,
 "texture": ExtResource("3_08vt1")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 8.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_head"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_head1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_head2")
 }],
 "loop": 1,
 "name": &"default",
@@ -66,5 +184,10 @@ texture = SubResource("GradientTexture2D_57qmd")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1672951229]
 sprite_frames = SubResource("SpriteFrames_d0u6y")
+animation = &"dance_bob"
 autoplay = "default"
-frame_progress = 0.92242306
+frame_progress = 0.8349643
+
+[node name="HeadSprite" type="AnimatedSprite2D" parent="." unique_id=1672951230]
+sprite_frames = SubResource("SpriteFrames_head")
+frame_progress = 0.13064942

@@ -36,9 +36,21 @@ func _draw() -> void:
 [node name="Main" type="Node2D" unique_id=1968898500]
 script = ExtResource("1_8jwtq")
 
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -100
+
+[node name="NightColor" type="ColorRect" parent="BackgroundLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.0901961, 0.0745098, 0.12549, 1)
+
 [node name="BackgroundPassers" type="Sprite2D" parent="." unique_id=1981734501]
 z_index = -10
-modulate = Color(1, 1, 1, 0.16)
+modulate = Color(0.38, 0.3, 0.72, 0.14)
 position = Vector2(-380, 350)
 scale = Vector2(0.23, 0.23)
 texture = ExtResource("8_passers_texture")

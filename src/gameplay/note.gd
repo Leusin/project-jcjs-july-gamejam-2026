@@ -13,28 +13,24 @@ enum Style { STRAIGHT, SINE, ORBIT }
 ##   HEAL   — 거기에 더해 체력을 돌려준다
 enum Kind { NORMAL, HEAL }
 
+const STRAIGHT_TINT := Color(1.0, 1.0, 1.0, 1.0)
+const SINE_TINT := Color(0.48, 0.82, 1.0, 1.0)
+const ORBIT_TINT := Color(0.88, 0.5, 1.0, 1.0)
+const HEAL_TINT := Color(1.0, 1.0, 1.0, 1.0)
+
 @export var fall_gravity: float = 1000.0
-## 태워 없어지기까지 걸리는 시간(초).
 @export var burn_duration: float = 0.5
-## 회복 나방이 승천해 사라지기까지 걸리는 시간(초). 타는 것보다 느긋해야 승천으로 읽힌다.
 @export var ascend_duration: float = 0.9
 
 @export_group("경로 모양")
-## 좌우로 흔들리는 폭(픽셀).
 @export var sine_amplitude: float = 90.0
-## 오는 동안 몇 번 흔들리는가.
 @export var sine_waves: float = 2.0
-## 불인간 둘레를 몇 바퀴 도는가.
-@export var orbit_turns: float = 1.25
+@export var orbit_turns: float = 1.0
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 var hit_time: float = 0.0      # 중앙에 도착해야 하는 곡 시각(초)
 var travel_time: float = 2.0   # 스폰에서 중앙까지 걸리는 시간(초)
-## 어느 방향에서 왔는가(Main의 Lane 값). 이 방향의 키를 눌러야 판정된다.
-var lane: int = 0
-## 방향을 틀린 적이 있는 나방. 이후 아무리 정확해도 Good이 최대다.
-## 세우는 것도 읽는 것도 Main이 한다 — 여기서는 들고만 있는다.
 var perfect_locked: bool = false
 var style: Style = Style.STRAIGHT
 var kind: Kind = Kind.NORMAL
@@ -58,8 +54,14 @@ func setup(conductor: Conductor, spawn_pos: Vector2, hit_pos: Vector2, note_hit_
 	# 무엇으로 보이는가. 
 	if kind == Kind.HEAL:
 		_sprite.play("heal")
+		_sprite.self_modulate = HEAL_TINT
 	elif style == Style.SINE:
 		_sprite.play("sine")
+		_sprite.self_modulate = SINE_TINT
+	elif style == Style.ORBIT:
+		_sprite.self_modulate = ORBIT_TINT
+	else:
+		_sprite.self_modulate = STRAIGHT_TINT
 
 	# 아트가 왼쪽을 향하므로, 진행 방향을 보도록 뒤집는다.
 	var dir := hit_pos - spawn_pos
@@ -105,7 +107,6 @@ func _position_at(t: float) -> Vector2:
 			return _hit_pos + Vector2(radius, 0.0).rotated(angle)
 	return straight
 
-## 타서 사그라진다. 다 타면 스스로 사라진다.
 func burn() -> void:
 	_burning = true
 	_sprite.play("burn")
@@ -115,16 +116,13 @@ func burn() -> void:
 	t.parallel().tween_property(_sprite, "position", _sprite.position + Vector2(0, -36), burn_duration)
 	t.tween_callback(queue_free)
 
-## 회복 나방이 사라지는 방식. 태우지 않는다 — 구하러 온 놈을 태우면 앞뒤가 안 맞는다.
-## 흰빛이 되어 위로 승천한다. 다 오르면 스스로 사라진다.
 func ascend() -> void:
-	_burning = true   # 경로 이동을 멈추는 플래그를 같이 쓴다
+	_burning = true
 	var t := create_tween()
 	t.tween_property(_sprite, "position", _sprite.position + Vector2(0, -110), ascend_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	t.parallel().tween_property(_sprite, "modulate", Color(2.2, 2.2, 2.4, 0.0), ascend_duration)
 	t.tween_callback(queue_free)
 
-## 어둠으로 추락하며 스스로 사라진다.
 func fall() -> void:
 	_falling = true
 	var dir := (_hit_pos - _spawn_pos).normalized()

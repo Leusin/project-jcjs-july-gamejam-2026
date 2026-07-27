@@ -6,6 +6,8 @@ extends Node2D
 ##   CanvasLayer(Hud) — 화면에 뭐가 보이나 (표시)
 ##   Conductor  — 지금 곡의 몇 초인가 (시계)
 
+## 나방이 날아오는 방향. 입력과는 무관하다 —
+## 어느 쪽에서 오든 탭 하나로 판정한다. 스폰 위치를 고르는 데만 쓴다.
 enum Lane { UP, DOWN, LEFT, RIGHT }
 enum Judgement { NONE, PERFECT, GOOD, MISS }
 
@@ -14,6 +16,11 @@ enum Judgement { NONE, PERFECT, GOOD, MISS }
 @export var perfect_window: float = 0.07
 ## 이 안에 들어오면 Good. 이 밖의 입력은 판정 대상이 아니다.
 @export var good_window: float = 0.2
+## 칠 노트가 없는데 눌렀을 때 콤보에서 깎을 양. 0이면 헛손질에 벌이 없다.
+## 버튼이 하나뿐이라, 헛손질이 공짜면 계속 누르고 있는 것이 최적 전략이 되어버린다.
+## 체력은 깎지 않는다 — 연타만 손해가 되게 하되 초보자를 죽이지는 않는 선.
+## 0으로 밀지 않고 조금씩 깎는 이유: 불인간의 춤 단계가 계단식이라 한 칸씩 내려와야 읽힌다.
+@export var bad_tap_combo_penalty: int = 1
 
 @export_group("점수")
 @export var perfect_score: int = 5
@@ -77,7 +84,6 @@ func _ready() -> void:
 		_hud.skip_title()
 		_begin_play()
 
-## 곡을 시작한다. 웹에서는 반드시 사용자 클릭 이후여야 소리가 난다.
 func _begin_play() -> void:
 	_seen_title = true
 	_playing = true
@@ -93,6 +99,7 @@ func _process(_delta: float) -> void:
 	for due in _chart.take_due_notes():
 		_spawn_note(due["hit_beat"], due["style"])
 	_drop_passed_notes()
+	_hit_point.sync_dance(_conductor.is_playing)
 	_hud.update_time_left(song_duration - _conductor.song_position)
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -105,61 +112,38 @@ func _unhandled_input(event: InputEvent) -> void:
 		_refresh_hud()
 		return
 		
-	var lane := _lane_from_event(event)
-
-	# 방향키가 아니면 — 게임오버 화면의 재시작 탭인지만 본다
-	if lane == -1:
-		if _game_over and _is_tap(event):
-			if Time.get_ticks_msec() / 1000.0 - _game_over_at >= restart_delay:
-				get_tree().reload_current_scene()
+	if not _is_tap(event):
 		return
 
-	# 여기 아래는 방향키만 온다
-	if not _playing or _game_over:
+	# 판정과 재시작이 같은 탭을 쓴다.
+	# 죽인 그 탭으로 곧바로 재시작되지 않도록 restart_delay가 사이를 벌려준다.
+	if _game_over:
+		if Time.get_ticks_msec() / 1000.0 - _game_over_at >= restart_delay:
+			get_tree().reload_current_scene()
 		return
 
-	_judge(lane)
+	_hit_point.on_tap()
+	_judge()
 
-## 누른 방향의 노트를 판정한다. 실패하면 방향을 틀린 것인지 허공을 친 것인지 가른다.
-func _judge(lane: int) -> void:
-	var note := _closest_note(lane)
+## 지금 시각에 가장 가까운 노트를 판정한다.
+## 방향은 보지 않는다 — 어디서 오든 탭 하나가 전부다.
+func _judge() -> void:
+	var note := _closest_note()
 	if note == null:
-		_miss_the_lane()
+		_on_bad_tap()
 		return
-
 	# 부호 있는 오차: 음수면 일찍 누른 것, 양수면 늦게 누른 것.
 	var signed_error := _conductor.song_position - note.hit_time
 	if absf(signed_error) > good_window:
-		_miss_the_lane()
+		_on_bad_tap()
 		return
-
 	_notes.erase(note)
-	# 한 번 방향을 틀린 나방은 아무리 정확해도 Good이 상한이다.
-	if absf(signed_error) <= perfect_window and not note.perfect_locked:
+	if absf(signed_error) <= perfect_window:
 		_score += perfect_score
 		_on_success(note, Judgement.PERFECT, signed_error)
 	else:
 		_score += good_score
 		_on_success(note, Judgement.GOOD, signed_error)
-
-## 누른 방향에 판정할 노트가 없었다. 다른 방향에 칠 노트가 있었다면 방향을 틀린 것이고,
-## 아무 데도 없었다면 그냥 허공을 친 것이다.
-func _miss_the_lane() -> void:
-	var other := _judgeable_note()
-	if other != null:
-		_on_wrong_direction(other)
-	else:
-		_on_bad_tap()
-
-## 지금 칠 수 있는 노트(방향 무관). 없으면 null.
-## 여기까지 왔다는 건 누른 방향은 실패했다는 뜻이라, 이 노트는 반드시 다른 방향이다.
-func _judgeable_note() -> Note:
-	var near := _closest_note()
-	if near == null:
-		return null
-	if absf(_conductor.song_position - near.hit_time) > good_window:
-		return null
-	return near
 
 # ---------------------------------------------------------------- 노트
 
@@ -168,10 +152,7 @@ func _spawn_note(hit_beat: float, style: int) -> void:
 	add_child(note)
 	var lane := randi() % _spawn_points.size()
 	var spawn: Marker2D = _spawn_points[lane]
-	note.lane = lane
 	note.style = style as Note.Style
-	# 체력이 가득 차 있을 때는 회복 나방을 내보내지 않는다 — 헛된 기회를 만들지 않으려고.
-	# 그래서 회복 나방이 보인다는 것 자체가 "지금 체력이 모자라다"는 신호가 된다.
 	if _health < max_health and randf() < heal_chance:
 		note.kind = Note.Kind.HEAL
 	note.setup(
@@ -197,12 +178,10 @@ func _drop_passed_notes() -> void:
 			_on_miss(note)
 
 ## 지금 시각에 가장 가까운 노트. 없으면 null.
-func _closest_note(lane: int = -1) -> Note:
+func _closest_note() -> Note:
 	var best: Note = null
 	var best_error := INF
 	for note in _notes:
-		if lane != -1 and note.lane != lane:
-			continue
 		var error := absf(_conductor.song_position - note.hit_time)
 		if error < best_error:
 			best_error = error
@@ -228,6 +207,7 @@ func _on_success(note: Note, judgement: Judgement, signed_error: float) -> void:
 		_hud.pulse_health()
 	elif judgement == Judgement.PERFECT:
 		_hud.flash("PERFECT", Hud.COLOR_PERFECT)
+		_hit_point.on_perfect()   # 잠깐 팔다리를 흩뜨린다
 	else:
 		_hud.flash("GOOD", Hud.COLOR_GOOD)
 	print("%s  (오차 %+.3f초, 콤보 %d)" % [Judgement.keys()[judgement], signed_error, _combo])
@@ -251,7 +231,7 @@ func _on_miss(note: Note) -> void:
 	if _health <= 0:
 		_end_game(false)
 
-## 칠 노트가 아무 데도 없을 때 누른 입력.
+## 칠 노트가 없을 때 누른 입력. 체력은 깎지 않고 콤보만 끊는다.
 func _on_bad_tap() -> void:
 	# 오프셋 보정용: 눌렀을 때 가장 가까운 노트가 얼마나 어긋나 있었는지 남긴다.
 	if log_bad_taps:
@@ -262,12 +242,11 @@ func _on_bad_tap() -> void:
 			print("헛손질 (가장 가까운 노트와 %+.3f초 — 음수면 너무 일찍)"
 				% (_conductor.song_position - near.hit_time))
 
-## 칠 수 있는 노트가 있었는데 다른 방향을 눌렀다.
-## 콤보도 체력도 깎지 않는다. 대신 그 나방은 Perfect를 잃고, 제자리에 남아 다시 칠 수 있다.
-func _on_wrong_direction(note: Note) -> void:
-	note.perfect_locked = true
-	_hud.flash("WRONG!", Hud.COLOR_WRONG)
-	print("방향 틀림 (%s에서 오는 나방)" % Lane.keys()[note.lane])
+	# 이미 0인 콤보를 또 깎았다고 알리지 않는다 — 조용히 넘어가는 편이 덜 시끄럽다.
+	if bad_tap_combo_penalty > 0 and _combo > 0:
+		_combo = maxi(0, _combo - bad_tap_combo_penalty)
+		_refresh_hud()
+		_hud.flash("빗나감", Hud.COLOR_WRONG)
 
 # ---------------------------------------------------------------- 승패
 
@@ -299,6 +278,8 @@ func _end_game(won: bool) -> void:
 
 func _refresh_hud() -> void:
 	_hud.update_stats(_score, _combo, _health, max_health, invincible)
+	# 콤보가 오를수록 불인간의 머리가 커진다. 약중강을 따로 그리는 대신 같은 그림을 키운다.
+	_hit_point.set_combo(_combo)
 
 ## ₩ 키로 무적을 켜고 끈다.
 ## ₩는 백슬래시와 같은 자리라, 한글/영문 입력 상태를 안 타도록 물리 위치와 문자 둘 다 본다.
@@ -308,27 +289,11 @@ func _is_cheat_key(event: InputEvent) -> bool:
 		return false
 	return key.physical_keycode == KEY_BACKSLASH or key.unicode == 0x20A9
 	
-func _lane_from_event(event: InputEvent) -> int:
-	var input = -1
-	if _is_key(event, KEY_W) or _is_key(event, KEY_UP):
-		input = Lane.UP
-	if _is_key(event, KEY_A) or _is_key(event, KEY_LEFT):
-		input = Lane.LEFT
-	if _is_key(event, KEY_S) or _is_key(event, KEY_DOWN):
-		input = Lane.DOWN
-	if _is_key(event, KEY_D) or _is_key(event, KEY_RIGHT):
-		input = Lane.RIGHT
-	return input
-	
-## 자판 배열이나 입력기(한/영)에 안 흔들리도록 물리 키 위치로 본다.
-## F 키는 쓰지 않는다 — macOS가 밝기·볼륨으로, 브라우저가 도움말로 먼저 가로챈다.
-func _is_key(event: InputEvent, physical_code: Key) -> bool:
-	var key := event as InputEventKey
-	return key != null and key.pressed and not key.echo and key.physical_keycode == physical_code
-
+## 이 게임의 유일한 입력. 스페이스·엔터(ui_accept)와 좌클릭을 하나로 본다.
+## 키를 꾹 누르고 있을 때 들어오는 echo는 거른다 — 안 거르면 누르고만 있어도 연타가 된다.
 func _is_tap(event: InputEvent) -> bool:
-	if event.is_action_pressed("ui_accept"):
-		return true
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		return true
+	if event is InputEventKey:
+		return event.pressed and not event.echo and event.is_action_pressed("ui_accept")
+	if event is InputEventMouseButton:
+		return event.pressed and event.button_index == MOUSE_BUTTON_LEFT
 	return false
