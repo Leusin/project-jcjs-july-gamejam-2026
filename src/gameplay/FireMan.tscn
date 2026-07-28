@@ -72,7 +72,7 @@ animations = [{
 }],
 "loop": 1,
 "name": &"dance_flailing",
-"speed": 8.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -184,9 +184,9 @@ texture = SubResource("GradientTexture2D_57qmd")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1672951229]
 sprite_frames = SubResource("SpriteFrames_d0u6y")
-animation = &"dance_bob"
+animation = &"dance_flailing"
 autoplay = "default"
-frame_progress = 0.8349643
+frame_progress = 0.59607
 
 [node name="HeadSprite" type="AnimatedSprite2D" parent="." unique_id=1672951230]
 sprite_frames = SubResource("SpriteFrames_head")
