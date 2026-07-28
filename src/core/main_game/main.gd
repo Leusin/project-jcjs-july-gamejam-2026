@@ -3,6 +3,8 @@ extends Node2D
 enum Lane { UP, DOWN, LEFT, RIGHT }
 enum Judgement { NONE, PERFECT, GOOD, MISS }
 
+const NoteScene := preload("res://src/gameplay/note.tscn")
+
 @export_group("판정 (초 단위 오차 허용범위)")
 @export var perfect_window: float = 0.07
 @export var good_window: float = 0.2
@@ -25,8 +27,6 @@ enum Judgement { NONE, PERFECT, GOOD, MISS }
 @export var start_stage: int = 0
 @export var log_bad_taps: bool = true
 
-const NoteScene := preload("res://src/gameplay/note.tscn")
-
 @onready var _spawn_points: Array = [
 	$SpawnPoints/SpawnTop,     # Lane.UP
 	$SpawnPoints/SpawnBottom,  # Lane.DOWN
@@ -37,6 +37,11 @@ const NoteScene := preload("res://src/gameplay/note.tscn")
 @onready var _conductor: Conductor = $Conductor
 @onready var _chart: Chart = $Chart
 @onready var _hud: Hud = $CanvasLayer
+@onready var _ignite_sound: AudioStreamPlayer = $Audio/IgniteSound
+@onready var _miss_sound: AudioStreamPlayer = $Audio/MissSound
+@onready var _heal_sound: AudioStreamPlayer = $Audio/HealSound
+
+static var _seen_title: bool = false
 
 ## 화면에 떠 있는, 아직 판정되지 않은 노트들.
 var _notes: Array[Note] = []
@@ -51,13 +56,13 @@ var _playing: bool = false
 var _game_over: bool = false
 var _game_over_at: float = 0.0
 
-static var _seen_title: bool = false
 
 func _ready() -> void:
 	_health = max_health
+
 	_refresh_hud()
 	_hud.start_pressed.connect(_begin_play)
-	
+
 	if _seen_title:
 		_hud.skip_title()
 		_begin_play()
@@ -65,14 +70,14 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if not _playing or _game_over:
 		return
-		
+
 	if _conductor.song_position >= song_duration:
 		_end_game(true)
 		return
-		
+
 	for due in _chart.take_due_notes():
 		_spawn_note(due["hit_beat"], due["style"])
-		
+
 	_drop_passed_notes()
 	_hit_point.sync_dance(_conductor.is_playing)
 	_hud.update_time_left(song_duration - _conductor.song_position)
@@ -80,19 +85,19 @@ func _process(_delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not _playing:
 		return
-		
+
 	if _is_cheat_key(event):
 		invincible = not invincible
 		_hud.flash("무적 %s" % ("ON" if invincible else "OFF"), Color(0.6, 0.8, 1.0))
 		_refresh_hud()
 		return
-		
+
 	if _is_tap(event):
 		if _game_over:
 			if _can_restart():
 				get_tree().reload_current_scene()
 			return
-		
+
 		_hit_point.on_tap()
 		_judge()
 
@@ -121,16 +126,16 @@ func _judge() -> void:
 	if is_outside_good_window:
 		_on_bad_tap()
 		return
-	
+
 	_notes.erase(closest_note)
-	
+
 	var is_perfect := absolute_time_difference <= perfect_window
 	if is_perfect:
 		_score += perfect_score
 		_on_success(closest_note,
 			Judgement.PERFECT,
 			signed_time_difference)
-	else: 
+	else:
 		_score += good_score
 		_on_success(
 			closest_note,
@@ -145,11 +150,11 @@ func _spawn_note(hit_beat: float, style: int) -> void:
 	add_child(note)
 
 	note.style = style as Note.Style
-	
+
 	var can_spawn_healing_note := _health < max_health and randf() < heal_chance
 	if can_spawn_healing_note:
 		note.kind = Note.Kind.HEAL
-	
+
 	var lane_index := randi() % _spawn_points.size()
 	var spawn_point: Marker2D = _spawn_points[lane_index]
 	var hit_time_seconds := hit_beat * _conductor.sec_per_beat
@@ -159,7 +164,7 @@ func _spawn_note(hit_beat: float, style: int) -> void:
 		_hit_point.global_position,
 		hit_time_seconds,
 		travel_time_seconds)
-		
+
 	_notes.append(note)
 
 func _drop_passed_notes() -> void:
@@ -170,7 +175,7 @@ func _drop_passed_notes() -> void:
 	for note: Note in notes_to_check:
 		if _game_over:
 			return
-			
+
 		var judgement_deadline := note.hit_time + good_window
 		var has_missed_deadline := _conductor.song_position > judgement_deadline
 		if not has_missed_deadline:
@@ -196,8 +201,10 @@ func _on_success(note: Note, judgement: Judgement, signed_error: float) -> void:
 	# 회복 나방은 태우지 않는다 — 구하러 온 놈이라 승천시킨다.
 	if note.kind == Note.Kind.HEAL:
 		note.ascend()
+		_heal_sound.play()
 	else:
 		note.burn()   # 둘 다 연출이 끝나면 스스로 사라진다
+		_ignite_sound.play()
 	_counts[judgement] += 1
 	_combo += 1
 	_max_combo = maxi(_max_combo, _combo)
@@ -215,11 +222,11 @@ func _on_success(note: Note, judgement: Judgement, signed_error: float) -> void:
 	print("%s  (오차 %+.3f초, 콤보 %d)" % [Judgement.keys()[judgement], signed_error, _combo])
 
 func _on_miss(note: Note) -> void:
-	# 회복 나방은 놓쳐도 벌하지 않는다. 구하러 온 나방이 도리어 아프게 하면 이상하다.
-	# 회복 기회를 날린 것으로 이미 충분한 손해다.
 	if note.kind == Note.Kind.HEAL:
 		note.fall()
 		return
+
+	_miss_sound.play()
 
 	_counts[Judgement.MISS] += 1
 	_combo = 0
@@ -272,8 +279,8 @@ func _end_game(won: bool) -> void:
 	var headline := "날이 밝았다" if won else "불이 꺼졌다"
 	_hud.show_result("%s\n\nSCORE %06d\n최대 콤보 %d\nPERFECT %d   GOOD %d   MISS %d\n\n탭하면 다시 시작" % [
 		headline, _score, _max_combo,
-		_counts[Judgement.PERFECT], 
-		_counts[Judgement.GOOD], 
+		_counts[Judgement.PERFECT],
+		_counts[Judgement.GOOD],
 		_counts[Judgement.MISS]
 	])
 
@@ -309,9 +316,7 @@ func _is_tap(event: InputEvent) -> bool:
 
 	var mouse_button := event as InputEventMouseButton
 	if mouse_button != null:
-		return (
-			mouse_button.pressed
-			and mouse_button.button_index == MOUSE_BUTTON_LEFT
-		)
+		return (mouse_button.pressed
+			and mouse_button.button_index == MOUSE_BUTTON_LEFT)
 
 	return false

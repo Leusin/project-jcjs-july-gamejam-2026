@@ -9,6 +9,9 @@
 [ext_resource type="Script" uid="uid://bj86i7uyu2300" path="res://src/core/main_game/hud.gd" id="7_hud"]
 [ext_resource type="Texture2D" uid="uid://dk5vnqhegx5xk" path="res://assets/sprites/background_sine_giants.png" id="8_passers_texture"]
 [ext_resource type="Script" uid="uid://doex6sakpl378" path="res://src/visual/background_passers.gd" id="9_passers_script"]
+[ext_resource type="AudioStream" uid="uid://ckom0ri04jr2f" path="res://assets/audio/sfx_ignite.wav" id="10_q3f53"]
+[ext_resource type="AudioStream" uid="uid://bli7ym53ayayq" path="res://assets/audio/sfx_miss.wav" id="11_drj1i"]
+[ext_resource type="AudioStream" uid="uid://bivo2hdejuacm" path="res://assets/audio/sfx_heal.wav" id="12_iu1vd"]
 
 [sub_resource type="GDScript" id="GDScript_8l6nt"]
 script/source = "extends Node2D
@@ -232,10 +235,24 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 36
 text = "시작"
 
-[node name="DebugOverlay" parent="." unique_id=1714306467 instance=ExtResource("3_h7gx0")]
-
-[node name="Conductor" type="Node2D" parent="." unique_id=1179597022]
+[node name="Conductor" type="Node2D" parent="." unique_id=1179597022 node_paths=PackedStringArray("music_player")]
 script = ExtResource("4_xijci")
+music_player = NodePath("../Audio/Music")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Conductor" unique_id=1635308877]
+[node name="Audio" type="Node" parent="." unique_id=1275736275]
+
+[node name="Music" type="AudioStreamPlayer" parent="Audio" unique_id=1635308877]
 stream = ExtResource("5_yuwmb")
+
+[node name="IgniteSound" type="AudioStreamPlayer" parent="Audio" unique_id=555621102]
+stream = ExtResource("10_q3f53")
+
+[node name="MissSound" type="AudioStreamPlayer" parent="Audio" unique_id=1615746327]
+stream = ExtResource("11_drj1i")
+volume_db = -6.0
+pitch_scale = 1.4
+
+[node name="HealSound" type="AudioStreamPlayer" parent="Audio" unique_id=406818672]
+stream = ExtResource("12_iu1vd")
+
+[node name="DebugOverlay" parent="." unique_id=1714306467 instance=ExtResource("3_h7gx0")]

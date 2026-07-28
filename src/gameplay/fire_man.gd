@@ -8,11 +8,6 @@ extends Marker2D
 @onready var _light: Sprite2D = $LightSprite2D
 @onready var _shadow: Sprite2D = $ShadowSprite2D
 
-## 맞은 순간 짧게 때리는 소리. 메트로놈과 같은 음원을 낮춰 쓴다 —
-## 박자 위에서 얻어맞는 게임이라 같은 계열 소리가 오히려 손맛으로 붙는다.
-@export var hit_pitch: float = 0.6
-@export var hit_volume_db: float = -2.0
-
 @export_group("춤")
 @export var dance_animations: Array[StringName] = [
 	&"dance_bob", &"dance_hop", &"dance_full"
@@ -34,7 +29,6 @@ extends Marker2D
 var _flicker_t: float = 0.0
 var _light_base: Vector2
 var _shadow_base: Vector2
-var _hit_sound: AudioStreamPlayer
 var _head_scale_tween: Tween
 var _head_step: int = -1
 ## 콤보로 정해진 머리 크기. tween이 이 값을 움직인다.
@@ -122,9 +116,8 @@ func set_combo(combo: int) -> void:
 		_head_scale_base, head_scale_steps[step], 0.25
 	).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
-## Main이 Miss 판정 시 호출. 빨강 플래시 + 짧은 흔들림 + 타격음.
+## Miss visual feedback: red flash and short shake.
 func take_damage() -> void:
-	_hit_sound.play()
 	for s in [_character_sprite, _head]:
 		s.modulate = Color(1.0, 0.3, 0.3)
 		create_tween().tween_property(s, "modulate", Color.WHITE, 0.3)
@@ -157,11 +150,6 @@ func _ready() -> void:
 	# 타이틀에서는 머리가 그려진 idle 한 장으로 버틴다.
 	_head.visible = false
 	_character_sprite.play(idle_animation)
-	_hit_sound = AudioStreamPlayer.new()
-	_hit_sound.stream = load("res://assets/audio/debug_click.wav")
-	_hit_sound.pitch_scale = hit_pitch
-	_hit_sound.volume_db = hit_volume_db
-	add_child(_hit_sound)
 
 func _process(delta: float) -> void:
 	_flicker_t += delta
