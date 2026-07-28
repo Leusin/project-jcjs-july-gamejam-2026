@@ -18,7 +18,7 @@ const NoteScene := preload("res://src/gameplay/note.tscn")
 @export var max_health: int = 5
 @export_range(0.0, 1.0) var heal_chance: float = 0.08
 @export var heal_amount: int = 1
-@export var song_duration: float = 180.0
+@export var song_duration: float = 135.0
 ## 게임오버 후 이 시간이 지나야 재시작 입력을 받는다(죽인 그 탭으로 바로 재시작되는 것 방지).
 @export var restart_delay: float = 1.5
 

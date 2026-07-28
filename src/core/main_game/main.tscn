@@ -216,7 +216,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 26
 text = "박자에 맞춰 클릭하거나 스페이스를 눌러 나방을 태우세요
-3분을 버티면 아침이 옵니다"
+날이 밝을 때까지 불꽃을 지키세요"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -254,5 +254,7 @@ pitch_scale = 1.4
 
 [node name="HealSound" type="AudioStreamPlayer" parent="Audio" unique_id=406818672]
 stream = ExtResource("12_iu1vd")
+volume_db = -0.6
+pitch_scale = 1.2
 
 [node name="DebugOverlay" parent="." unique_id=1714306467 instance=ExtResource("3_h7gx0")]

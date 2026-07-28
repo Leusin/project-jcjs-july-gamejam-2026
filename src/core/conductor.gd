@@ -21,9 +21,22 @@ func _ready() -> void:
 	sec_per_beat = 60.0 / bpm
 
 func start_song() -> void:
-	_loop_length = loop_beats * sec_per_beat   # 4박 × 0.5초 = 2.0초
+	var stream := music_player.stream
+	assert(stream != null, "MusicPlayer에 음악이 없습니다.")
+	if stream is AudioStreamWAV:
+		var wav := stream as AudioStreamWAV
+
+		if wav.loop_mode != AudioStreamWAV.LOOP_DISABLED:
+			var loop_samples := wav.loop_end - wav.loop_begin
+			_loop_length = float(loop_samples) / wav.mix_rate
+		else:
+			_loop_length = wav.get_length()
+	else:
+		_loop_length = stream.get_length()
+
 	_loops_completed = 0
 	_last_raw_position = 0.0
+
 	music_player.play()
 	is_playing = true
 
@@ -41,9 +54,9 @@ func _process(_delta: float) -> void:
 		_loops_completed += 1
 	_last_raw_position = raw
 
-	song_position = _loops_completed * _loop_length + raw \
-		+ AudioServer.get_time_since_last_mix() \
-		- AudioServer.get_output_latency() \
-		+ manual_offset
+	song_position = (_loops_completed * _loop_length + raw 
+		+ AudioServer.get_time_since_last_mix() 
+		- AudioServer.get_output_latency() 
+		+ manual_offset)
 
 	song_position_in_beats = song_position / sec_per_beat
