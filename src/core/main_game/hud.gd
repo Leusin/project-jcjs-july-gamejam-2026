@@ -16,6 +16,18 @@ const COLOR_WRONG := Color("ff8a24")
 const COLOR_MISS := Color("ff4f70")
 const COLOR_HEAL := Color("f6f0ff")
 const COLOR_HEAL_ACCENT := Color("ff4f70")
+const FRENZY_COMBO_COLORS: Array[Color] = [
+	Color("f2e8d5"),
+	Color("ff4fbd"),
+	Color("b8ff1a"),
+	Color("ff6b2c"),
+]
+const FRENZY_CAPTION_COLORS: Array[Color] = [
+	Color("9b9096"),
+	Color("d75aa8"),
+	Color("87b83e"),
+	Color("d95838"),
+]
 
 ## 꺼진 체력은 같은 머리 스프라이트를 재처럼 식힌 색으로 표시한다.
 const HEAD_LIT := Color(1, 1, 1, 1)
@@ -23,6 +35,7 @@ const HEAD_DEAD := Color(0.36, 0.30, 0.39, 1)
 
 @onready var _score_label: Label = $ScoreLabel
 @onready var _combo_box: VBoxContainer = $ComboBox
+@onready var _combo_caption: Label = $ComboBox/ComboCaption
 @onready var _combo_label: Label = $ComboBox/ComboLabel
 @onready var _health_box: HBoxContainer = $HealthBox
 @onready var _practice_badge: Label = $PracticeBadge
@@ -47,7 +60,11 @@ const HEAD_DEAD := Color(0.36, 0.30, 0.39, 1)
 var _flash_tween: Tween
 var _health_tween: Tween
 var _subtitle_tween: Tween
+var _combo_tween: Tween
 var _flames: Array[TextureRect] = []
+var _frenzy_stage: int = 0
+var _last_combo: int = 0
+var _skip_next_combo_pulse: bool = false
 ## 타이틀·결과 화면에서는 false. update_stats가 숨긴 HUD를 되살리지 않게 한다.
 var _game_hud_shown: bool = false
 
@@ -60,6 +77,8 @@ func _ready() -> void:
 	_start_button.pressed.connect(_on_start_pressed)
 	_restart_button.pressed.connect(_on_restart_pressed)
 	_title_button.pressed.connect(_on_title_pressed)
+	_combo_box.offset_transform_enabled = true
+	_combo_box.offset_transform_pivot_ratio = Vector2(1.0, 0.5)
 	_set_game_hud_visible(false)
 	pulse_subtitle()
 
@@ -111,10 +130,39 @@ func update_stats(score: int, combo: int,
 	_combo_box.visible = _game_hud_shown and combo > 0
 	_combo_label.text = "x%d" % combo
 	_practice_badge.visible = _game_hud_shown and invincible
+	if combo > _last_combo and _frenzy_stage > 0 and not _skip_next_combo_pulse:
+		_pulse_combo(1.04 + _frenzy_stage * 0.025)
+	_skip_next_combo_pulse = false
+	_last_combo = combo
 
 	for i in _flames.size():
 		_flames[i].visible = i < max_health
 		_flames[i].modulate = HEAD_LIT if i < health else HEAD_DEAD
+
+
+func set_frenzy_stage(stage: int, rising: bool) -> void:
+	stage = clampi(stage, 0, FRENZY_COMBO_COLORS.size() - 1)
+	if stage == _frenzy_stage:
+		return
+	_frenzy_stage = stage
+	_combo_label.add_theme_color_override("font_color", FRENZY_COMBO_COLORS[stage])
+	_combo_caption.add_theme_color_override("font_color", FRENZY_CAPTION_COLORS[stage])
+	if rising and _game_hud_shown:
+		_skip_next_combo_pulse = true
+		_pulse_combo(1.12 + stage * 0.06)
+
+
+func _pulse_combo(amount: float) -> void:
+	if _combo_tween != null and _combo_tween.is_valid():
+		_combo_tween.kill()
+	_combo_box.offset_transform_scale = Vector2.ONE * amount
+	_combo_tween = create_tween()
+	_combo_tween.tween_property(
+		_combo_box,
+		"offset_transform_scale",
+		Vector2.ONE,
+		0.18
+	).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 ## 바가 주 표시이고 숫자는 보조다.

@@ -8,6 +8,17 @@ extends Marker2D
 @onready var _light: Sprite2D = $LightSprite2D
 @onready var _shadow: Sprite2D = $ShadowSprite2D
 
+const FRENZY_LIGHT_COLORS: Array[Color] = [
+	Color("ffd35c"),
+	Color("ff4fbd"),
+	Color("b8ff1a"),
+	Color("ff552b"),
+]
+const FRENZY_LIGHT_SCALES: Array[float] = [1.0, 1.12, 1.28, 1.48]
+const FRENZY_FLICKER_FAST: Array[float] = [0.04, 0.06, 0.08, 0.11]
+const FRENZY_FLICKER_SLOW: Array[float] = [0.08, 0.10, 0.14, 0.20]
+const FRENZY_FLICKER_SPEED: Array[float] = [1.0, 1.15, 1.4, 1.75]
+
 @export_group("춤")
 @export var dance_animations: Array[StringName] = [
 	&"dance_bob", &"dance_hop", &"dance_full"
@@ -30,7 +41,10 @@ var _flicker_t: float = 0.0
 var _light_base: Vector2
 var _shadow_base: Vector2
 var _head_scale_tween: Tween
+var _frenzy_tween: Tween
 var _head_step: int = -1
+var _frenzy_stage: int = 0
+var _light_scale_multiplier: float = 1.0
 ## 콤보로 정해진 머리 크기. tween이 이 값을 움직인다.
 var _head_scale_base: float = 1.0
 ## 탭으로 얹힌 부풀기. _process에서 위 값에 더해지며 서서히 빠진다.
@@ -116,6 +130,29 @@ func set_combo(combo: int) -> void:
 		_head_scale_base, head_scale_steps[step], 0.25
 	).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
+
+func set_frenzy_stage(stage: int) -> void:
+	stage = clampi(stage, 0, FRENZY_LIGHT_COLORS.size() - 1)
+	if stage == _frenzy_stage:
+		return
+	_frenzy_stage = stage
+	if _frenzy_tween != null and _frenzy_tween.is_valid():
+		_frenzy_tween.kill()
+	_frenzy_tween = create_tween().set_parallel()
+	_frenzy_tween.tween_property(
+		_light,
+		"modulate",
+		FRENZY_LIGHT_COLORS[stage],
+		0.22
+	)
+	_frenzy_tween.tween_method(
+		func(value: float) -> void: _light_scale_multiplier = value,
+		_light_scale_multiplier,
+		FRENZY_LIGHT_SCALES[stage],
+		0.22
+	).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
 ## Miss visual feedback: red flash and short shake.
 func take_damage() -> void:
 	for s in [_character_sprite, _head]:
@@ -154,8 +191,12 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_flicker_t += delta
 	# 주파수 다른 sin 둘을 섞어 불규칙한 불꽃 일렁임
-	var wobble := 0.04 * sin(_flicker_t * 7.0) + 0.08 * sin(_flicker_t * 1.0)
-	_light.scale = _light_base * (1.0 + wobble)
+	var speed := FRENZY_FLICKER_SPEED[_frenzy_stage]
+	var wobble := (
+		FRENZY_FLICKER_FAST[_frenzy_stage] * sin(_flicker_t * 7.0 * speed)
+		+ FRENZY_FLICKER_SLOW[_frenzy_stage] * sin(_flicker_t * speed)
+	)
+	_light.scale = _light_base * _light_scale_multiplier * (1.0 + wobble)
 	_shadow.scale = _shadow_base * (1.0 - wobble)   # 빛 커지면 그림자 살짝 줄게
 
 	# 콤보로 정해진 크기에 탭 부풀기를 얹는다. 부풀기는 시간이 지나면 빠진다.

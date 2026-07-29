@@ -2,8 +2,17 @@ extends Node2D
 
 enum Lane { UP, DOWN, LEFT, RIGHT }
 enum Judgement { NONE, PERFECT, GOOD, MISS }
+enum FrenzyStage { NORMAL, IGNITED, FRENZY, DEIFIED }
 
 const NoteScene := preload("res://src/gameplay/note.tscn")
+const FRENZY_BACKGROUND_COLORS: Array[Color] = [
+	Color("171320"),
+	Color("210d2a"),
+	Color("132211"),
+	Color("2a0b12"),
+]
+const FRENZY_BREATH_AMOUNTS: Array[float] = [0.0, 0.035, 0.06, 0.09]
+const FRENZY_BREATH_SPEEDS: Array[float] = [0.0, 1.4, 2.1, 3.0]
 
 @export_group("판정 (초 단위 오차 허용범위)")
 @export var perfect_window: float = 0.07
@@ -39,6 +48,8 @@ const NoteScene := preload("res://src/gameplay/note.tscn")
 @onready var _chart: Chart = $Chart
 @onready var _hud: Hud = $CanvasLayer
 @onready var _debug_overlay: CanvasLayer = $DebugOverlay
+@onready var _night_color: ColorRect = $BackgroundLayer/NightColor
+@onready var _background_passers: BackgroundPassers = $BackgroundPassers
 @onready var _title_neon_hum: AudioStreamPlayer = $Audio/TitleNeonHum
 @onready var _ignite_sound: AudioStreamPlayer = $Audio/IgniteSound
 @onready var _miss_sound: AudioStreamPlayer = $Audio/MissSound
@@ -60,6 +71,10 @@ var _counts := { Judgement.PERFECT: 0, Judgement.GOOD: 0, Judgement.MISS: 0 }
 
 var _playing: bool = false
 var _game_over: bool = false
+var _frenzy_stage: int = FrenzyStage.NORMAL
+var _frenzy_color: Color = FRENZY_BACKGROUND_COLORS[FrenzyStage.NORMAL]
+var _frenzy_clock: float = 0.0
+var _frenzy_color_tween: Tween
 
 
 func _ready() -> void:
@@ -82,9 +97,11 @@ func _ready() -> void:
 			neon_stream.loop = true
 		_title_neon_hum.play()
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if not _playing or _game_over:
 		return
+
+	_update_frenzy_background(delta)
 
 	if _conductor.song_position >= song_duration:
 		_end_game(true)
@@ -238,7 +255,7 @@ func _on_success(note: Note, judgement: Judgement, signed_error: float) -> void:
 		_hud.flash("HEAL +%d" % heal_amount, Hud.COLOR_HEAL, 42)
 		_hud.pulse_health()
 	elif judgement == Judgement.PERFECT:
-		_hud.flash("PERFECT", Hud.COLOR_PERFECT, 60)
+		_hud.flash("PERFECT", Hud.COLOR_PERFECT, 60 + _frenzy_stage * 4)
 		_hit_point.on_perfect()   # 잠깐 팔다리를 흩뜨린다
 	else:
 		_hud.flash("GOOD", Hud.COLOR_GOOD, 40)
@@ -327,7 +344,56 @@ func _score_multiplier(combo: int) -> int:
 		return 2
 	return 1
 
+
+func _frenzy_stage_for_combo(combo: int) -> int:
+	if combo >= 50:
+		return FrenzyStage.DEIFIED
+	if combo >= 30:
+		return FrenzyStage.FRENZY
+	if combo >= 10:
+		return FrenzyStage.IGNITED
+	return FrenzyStage.NORMAL
+
+
+func _update_frenzy_stage() -> void:
+	var next_stage := _frenzy_stage_for_combo(_combo)
+	if next_stage == _frenzy_stage:
+		return
+
+	var previous_stage := _frenzy_stage
+	_frenzy_stage = next_stage
+	_hud.set_frenzy_stage(next_stage, next_stage > previous_stage)
+	_hit_point.set_frenzy_stage(next_stage)
+	_background_passers.set_frenzy_stage(next_stage)
+
+	if _frenzy_color_tween != null and _frenzy_color_tween.is_valid():
+		_frenzy_color_tween.kill()
+	var target_color := FRENZY_BACKGROUND_COLORS[next_stage]
+	var transition_time := 0.28 if next_stage > previous_stage else 0.16
+	_frenzy_color_tween = create_tween()
+	_frenzy_color_tween.tween_method(
+		func(color: Color) -> void: _frenzy_color = color,
+		_frenzy_color,
+		target_color,
+		transition_time
+	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+
+func _update_frenzy_background(delta: float) -> void:
+	_frenzy_clock += delta
+	var amount := FRENZY_BREATH_AMOUNTS[_frenzy_stage]
+	var speed := FRENZY_BREATH_SPEEDS[_frenzy_stage]
+	var brightness := 1.0 + sin(_frenzy_clock * speed) * amount
+	_night_color.color = Color(
+		_frenzy_color.r * brightness,
+		_frenzy_color.g * brightness,
+		_frenzy_color.b * brightness,
+		1.0
+	)
+
+
 func _refresh_hud() -> void:
+	_update_frenzy_stage()
 	_hud.update_stats(_score, _combo, _health, max_health, invincible)
 	_hit_point.set_combo(_combo)
 
