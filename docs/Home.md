@@ -9,17 +9,20 @@
 - [[GDD|GDD]]
 - [[Core MVP Plan|Core MVP Plan]]
 - [[Direction Pose Expansion Plan|Direction Pose Expansion Plan]]
+- [[Final Polish Plan|Final Polish Plan]]
 - [[Todo|Todo]]
 - [[Dev Log|Dev Log]]
 - [[Retrospective|Retrospective]]
 
 ## 현재 상태
 
-- 단계: 음악 기반 코어 완료, 방향 포즈 게임플레이 확장 준비
+- 단계: 음악 기반 원버튼 코어 완료, 최종 UI·연습 모드·광란 연출 폴리싱
 - 빌드: Godot 플레이 검증 완료, Web export preset 설정 완료
-- 구현 완료: 4방향 비트맵 스폰, 음악 시간 기반 판정, 점수·콤보, 체력, 승패, 타이틀·재시작
+- 구현 완료: 4방향 비트맵 스폰, 원버튼 음악 시간 기반 판정, 점수·콤보, 체력, 승패, 타이틀·재시작
 - 콘텐츠 완료: 직선·사인파·궤도형 나방과 구간별 난이도 상승
-- 다음 행동: [[Direction Pose Expansion Plan#Phase 0 — 코드 점검과 기준선 확보|코드 점검과 기준선 확보]]
-- 이후 순서: 방향키 판정 → 방향 포즈 나방인간 → 춤추는 불인간과 콤보 성장 → 외형 3종 → Web QA와 제출
-- Godot 프로젝트: `C:\Users\home\Documents\Godot Projects\project-jul-jam-2026`
-- 기준 커밋: `176e3cf` (`docs: 아트 폴리싱 가이드 추가`, 2026-07-26)
+- 최종 조작 결정: `Space` 또는 마우스 왼쪽 클릭을 사용하는 원버튼
+- 다음 행동: [[Final Polish Plan#Phase 1 — 정식 연습 모드|정식 연습 모드]]
+- 이후 순서: 연습 모드 → UI 개선 → 콤보 광란 효과 → Web QA와 제출
+- Godot 프로젝트: `C:\MySpace\MyGodot\project-jul-jam-2026`
+- Web export 주의: Standard(non-Mono) Godot과 Web export template이 필요함
+- 기준 커밋: `3459bac` (`feat: 음악 리소스 교체, 노트 패턴 개선`, 2026-07-29)

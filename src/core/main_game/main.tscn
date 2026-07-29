@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bxs2jilsgmry3" path="res://src/gameplay/FireMan.tscn" id="2_8jwtq"]
 [ext_resource type="PackedScene" uid="uid://c7ml0kan4qwy7" path="res://src/debug/debug_overlay.tscn" id="3_h7gx0"]
 [ext_resource type="Script" uid="uid://dbgphtmug2jgj" path="res://src/core/conductor.gd" id="4_xijci"]
-[ext_resource type="AudioStream" uid="uid://c2cgoyxws53i2" path="res://assets/audio/jcjs_july_jam_2026_moth_theme_v01.wav" id="5_yuwmb"]
+[ext_resource type="AudioStream" uid="uid://bjt30pxxusuxy" path="res://assets/audio/jcjs_july_jam_2026_moth_theme_v0.2.wav" id="5_yuwmb"]
 [ext_resource type="Script" uid="uid://b5gnfgge2sbqx" path="res://src/core/main_game/chart.gd" id="6_chart"]
 [ext_resource type="Script" uid="uid://bj86i7uyu2300" path="res://src/core/main_game/hud.gd" id="7_hud"]
 [ext_resource type="Texture2D" uid="uid://dk5vnqhegx5xk" path="res://assets/sprites/background_sine_giants.png" id="8_passers_texture"]
@@ -12,6 +12,10 @@
 [ext_resource type="AudioStream" uid="uid://ckom0ri04jr2f" path="res://assets/audio/sfx_ignite.wav" id="10_q3f53"]
 [ext_resource type="AudioStream" uid="uid://bli7ym53ayayq" path="res://assets/audio/sfx_miss.wav" id="11_drj1i"]
 [ext_resource type="AudioStream" uid="uid://bivo2hdejuacm" path="res://assets/audio/sfx_heal.wav" id="12_iu1vd"]
+[ext_resource type="Texture2D" uid="uid://brknwpbac31wi" path="res://assets/sprites/title.png" id="13_title"]
+[ext_resource type="Texture2D" uid="uid://hyiqj2vfflrw" path="res://assets/ui/check_checked.svg" id="14_check_on"]
+[ext_resource type="Texture2D" uid="uid://n8fu15g7j7kq" path="res://assets/ui/check_unchecked.svg" id="15_check_off"]
+[ext_resource type="Texture2D" uid="uid://bigexvh7il867" path="res://assets/sprites/fire_man_head_1.png" id="16_head"]
 
 [sub_resource type="GDScript" id="GDScript_8l6nt"]
 script/source = "extends Node2D
@@ -35,6 +39,104 @@ func _draw() -> void:
 	for band in main.judgement_bands():
 		draw_line(band[\"a\"], band[\"b\"], band[\"color\"], band_width)
 "
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_timebar_bg"]
+bg_color = Color(0.156863, 0.109804, 0.180392, 0.85)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_timebar_fill"]
+bg_color = Color(1, 0.721569, 0.247059, 0.95)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_head"]
+atlas = ExtResource("16_head")
+region = Rect2(39, 13, 56, 63)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_start_normal"]
+content_margin_left = 28.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+bg_color = Color(0.070588, 0.031373, 0.058824, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.184314, 0.529412, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 0.184314, 0.529412, 0.55)
+shadow_size = 13
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_start_pressed"]
+content_margin_left = 28.0
+content_margin_top = 18.0
+content_margin_right = 28.0
+content_margin_bottom = 10.0
+bg_color = Color(0.717647, 1, 0.164706, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.858824, 1, 0.552941, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.717647, 1, 0.164706, 0.7)
+shadow_size = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_start_hover"]
+content_margin_left = 28.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+bg_color = Color(0.152941, 0.058824, 0.121569, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.541176, 0.768627, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(1, 0.309804, 0.603922, 0.78)
+shadow_size = 20
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_start_disabled"]
+content_margin_left = 28.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+bg_color = Color(0.278431, 0.258824, 0.286275, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.407843, 0.352941, 0.407843, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_start_focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.717647, 1, 0.164706, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
 
 [node name="Main" type="Node2D" unique_id=1968898500]
 script = ExtResource("1_8jwtq")
@@ -86,53 +188,130 @@ script = SubResource("GDScript_8l6nt")
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1045942636]
 script = ExtResource("7_hud")
 
-[node name="ScoreLabel" type="Label" parent="CanvasLayer" unique_id=2121135264]
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 220.0
-offset_bottom = 114.0
-theme_override_font_sizes/font_size = 32
-text = "Score:000000
-"
+[node name="TimeBar" type="ProgressBar" parent="CanvasLayer" unique_id=1520043814]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -7.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_timebar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_timebar_fill")
+value = 100.0
+show_percentage = false
 
-[node name="ComboLabel" type="Label" parent="CanvasLayer" unique_id=694867683]
+[node name="HealthBox" type="HBoxContainer" parent="CanvasLayer" unique_id=1520043805]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 324.0
+offset_bottom = 68.0
+theme_override_constants/separation = 10
+
+[node name="Flame1" type="TextureRect" parent="CanvasLayer/HealthBox" unique_id=1520043806]
+custom_minimum_size = Vector2(44, 50)
+layout_mode = 2
+texture = SubResource("AtlasTexture_head")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Flame2" type="TextureRect" parent="CanvasLayer/HealthBox" unique_id=1520043807]
+custom_minimum_size = Vector2(44, 50)
+layout_mode = 2
+texture = SubResource("AtlasTexture_head")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Flame3" type="TextureRect" parent="CanvasLayer/HealthBox" unique_id=1520043808]
+custom_minimum_size = Vector2(44, 50)
+layout_mode = 2
+texture = SubResource("AtlasTexture_head")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Flame4" type="TextureRect" parent="CanvasLayer/HealthBox" unique_id=1520043809]
+custom_minimum_size = Vector2(44, 50)
+layout_mode = 2
+texture = SubResource("AtlasTexture_head")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Flame5" type="TextureRect" parent="CanvasLayer/HealthBox" unique_id=1520043810]
+custom_minimum_size = Vector2(44, 50)
+layout_mode = 2
+texture = SubResource("AtlasTexture_head")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PracticeBadge" type="Label" parent="CanvasLayer" unique_id=1520043811]
+visible = false
+offset_left = 26.0
+offset_top = 74.0
+offset_right = 326.0
+offset_bottom = 98.0
+theme_override_colors/font_color = Color(1, 0.541176, 0.768627, 1)
+theme_override_font_sizes/font_size = 18
+text = "연습 모드"
+vertical_alignment = 1
+
+[node name="ComboBox" type="VBoxContainer" parent="CanvasLayer" unique_id=1520043812]
+visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -208.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = 62.0
+offset_left = -260.0
+offset_top = 54.0
+offset_right = -24.0
+offset_bottom = 136.0
 grow_horizontal = 0
-theme_override_font_sizes/font_size = 32
-text = "Combo:0000"
+theme_override_constants/separation = -6
+
+[node name="ComboCaption" type="Label" parent="CanvasLayer/ComboBox" unique_id=1520043813]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.607843, 0.564706, 0.588235, 1)
+theme_override_font_sizes/font_size = 17
+text = "COMBO"
 horizontal_alignment = 2
 
-[node name="HealthLabel" type="Label" parent="CanvasLayer" unique_id=1520043771]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -200.0
-offset_top = 16.0
-offset_right = 200.0
-offset_bottom = 62.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 32
-text = "HP 5 / 5"
-horizontal_alignment = 1
+[node name="ComboLabel" type="Label" parent="CanvasLayer/ComboBox" unique_id=694867683]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94902, 0.909804, 0.835294, 1)
+theme_override_font_sizes/font_size = 54
+text = "x0"
+horizontal_alignment = 2
+
+[node name="ScoreLabel" type="Label" parent="CanvasLayer" unique_id=2121135264]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = 48.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.607843, 0.564706, 0.588235, 1)
+theme_override_font_sizes/font_size = 22
+text = "SCORE 000000"
+horizontal_alignment = 2
+vertical_alignment = 1
 
 [node name="TimeLabel" type="Label" parent="CanvasLayer" unique_id=1520043774]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -200.0
-offset_top = 60.0
-offset_right = 200.0
-offset_bottom = 96.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 24
-text = "3:00 남음"
-horizontal_alignment = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -44.0
+offset_right = -24.0
+offset_bottom = -18.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.454902, 0.423529, 0.443137, 1)
+theme_override_font_sizes/font_size = 18
+text = "1:30 남음"
+horizontal_alignment = 2
+vertical_alignment = 1
 
 [node name="JudgementLabel" type="Label" parent="CanvasLayer" unique_id=1520043773]
 modulate = Color(1, 1, 1, 0)
@@ -152,23 +331,127 @@ text = "PERFECT"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="GameOverLabel" type="Label" parent="CanvasLayer" unique_id=1520043772]
+[node name="ResultScreen" type="Control" parent="CanvasLayer" unique_id=1520043790]
 visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -360.0
-offset_top = -160.0
-offset_right = 360.0
-offset_bottom = 160.0
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 40
+
+[node name="Dim" type="ColorRect" parent="CanvasLayer/ResultScreen" unique_id=1520043797]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.34509805)
+
+[node name="Layout" type="VBoxContainer" parent="CanvasLayer/ResultScreen" unique_id=1520043798]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="ResultGroup" type="VBoxContainer" parent="CanvasLayer/ResultScreen/Layout" unique_id=1520043804]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="HeadGroup" type="VBoxContainer" parent="CanvasLayer/ResultScreen/Layout/ResultGroup" unique_id=1520043800]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeadlineLabel" type="Label" parent="CanvasLayer/ResultScreen/Layout/ResultGroup/HeadGroup" unique_id=1520043772]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94902, 0.909804, 0.835294, 1)
+theme_override_font_sizes/font_size = 56
 text = "GAME OVER"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="PracticeNote" type="Label" parent="CanvasLayer/ResultScreen/Layout/ResultGroup/HeadGroup" unique_id=1520043801]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.541176, 0.768627, 1)
+theme_override_font_sizes/font_size = 20
+text = "— 연습 기록 —"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="CanvasLayer/ResultScreen/Layout/ResultGroup" unique_id=1520043802]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.847059, 0.803922, 0.760784, 1)
+theme_override_constants/line_spacing = 4
+theme_override_font_sizes/font_size = 30
+text = "SCORE 000000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="JudgeLabel" type="RichTextLabel" parent="CanvasLayer/ResultScreen/Layout/ResultGroup" unique_id=1520043815]
+layout_mode = 2
+theme_override_colors/default_color = Color(0.607843, 0.564706, 0.588235, 1)
+theme_override_font_sizes/normal_font_size = 30
+bbcode_enabled = true
+text = "[center]PERFECT 0[/center]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="RestartButton" type="Button" parent="CanvasLayer/ResultScreen/Layout" unique_id=1520043793]
+custom_minimum_size = Vector2(300, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.94902, 0.909804, 0.835294, 1)
+theme_override_colors/font_focus_color = Color(0.94902, 0.909804, 0.835294, 1)
+theme_override_colors/font_pressed_color = Color(0.070588, 0.043137, 0.078431, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(0.494118, 0.462745, 0.494118, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_start_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_start_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_start_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_start_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_start_focus")
+text = "다시 춤추기"
+
+[node name="FooterGroup" type="VBoxContainer" parent="CanvasLayer/ResultScreen/Layout" unique_id=1520043803]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="NextPracticeCheck" type="CheckBox" parent="CanvasLayer/ResultScreen/Layout/FooterGroup" unique_id=1520043791]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.94902, 0.909804, 0.835294, 1)
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_normal_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+theme_override_constants/h_separation = 12
+theme_override_font_sizes/font_size = 20
+theme_override_icons/checked = ExtResource("14_check_on")
+theme_override_icons/unchecked = ExtResource("15_check_off")
+text = "다음 판 연습 모드 · 체력이 감소하지 않습니다"
+
+[node name="TitleButton" type="Button" parent="CanvasLayer/ResultScreen/Layout/FooterGroup" unique_id=1520043794]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.607843, 0.564706, 0.588235, 1)
+theme_override_colors/font_focus_color = Color(1, 0.541176, 0.768627, 1)
+theme_override_colors/font_hover_color = Color(1, 0.541176, 0.768627, 1)
+theme_override_colors/font_disabled_color = Color(0.313726, 0.294118, 0.313726, 1)
+theme_override_font_sizes/font_size = 20
+text = "타이틀로 돌아가기"
+flat = true
 
 [node name="TitleScreen" type="Control" parent="CanvasLayer" unique_id=1520043780]
 layout_mode = 3
@@ -186,54 +469,82 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.6)
 
-[node name="TitleLabel" type="Label" parent="CanvasLayer/TitleScreen" unique_id=1520043782]
-layout_mode = 0
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -400.0
-offset_top = -220.0
-offset_right = 400.0
-offset_bottom = -110.0
+[node name="Layout" type="VBoxContainer" parent="CanvasLayer/TitleScreen" unique_id=1520043787]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 80
-text = "불나방"
-horizontal_alignment = 1
-vertical_alignment = 1
+theme_override_constants/separation = 16
+alignment = 1
 
-[node name="SubtitleLabel" type="Label" parent="CanvasLayer/TitleScreen" unique_id=1520043783]
-layout_mode = 0
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -400.0
-offset_top = -100.0
-offset_right = 400.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="TitleImage" type="TextureRect" parent="CanvasLayer/TitleScreen/Layout" unique_id=1520043782]
+custom_minimum_size = Vector2(640, 144)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("13_title")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SubtitleLabel" type="Label" parent="CanvasLayer/TitleScreen/Layout" unique_id=1520043783]
+modulate = Color(1, 1, 0.2784314, 1)
+layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "박자에 맞춰 클릭하거나 스페이스를 눌러 나방을 태우세요
-날이 밝을 때까지 불꽃을 지키세요"
+text = "박자에 맞춰 나방을 불꽃으로 이끄세요"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StartButton" type="Button" parent="CanvasLayer/TitleScreen" unique_id=1520043784]
-layout_mode = 0
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -130.0
-offset_top = 60.0
-offset_right = 130.0
-offset_bottom = 140.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 36
-text = "시작"
+[node name="FireManSpace" type="Control" parent="CanvasLayer/TitleScreen/Layout" unique_id=1520043788]
+custom_minimum_size = Vector2(0, 240)
+propagate_maximum_size = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="StartButton" type="Button" parent="CanvasLayer/TitleScreen/Layout" unique_id=1520043784]
+custom_minimum_size = Vector2(280, 72)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.94902, 0.909804, 0.835294, 1)
+theme_override_colors/font_focus_color = Color(0.94902, 0.909804, 0.835294, 1)
+theme_override_colors/font_pressed_color = Color(0.070588, 0.043137, 0.078431, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(0.494118, 0.462745, 0.494118, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_start_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_start_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_start_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_start_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_start_focus")
+text = "춤추기"
+
+[node name="BottomSpace" type="Control" parent="CanvasLayer/TitleScreen/Layout" unique_id=1520043799]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="PracticeCheck" type="CheckBox" parent="CanvasLayer/TitleScreen/Layout" unique_id=1520043785]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_normal_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_focus_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_hover_pressed_color = Color(1, 1, 1, 1)
+theme_override_constants/h_separation = 12
+theme_override_font_sizes/font_size = 20
+theme_override_icons/checked = ExtResource("14_check_on")
+theme_override_icons/unchecked = ExtResource("15_check_off")
+text = "연습 모드 · 불꽃이 꺼지지 않습니다"
+
+[node name="BottomSpace2" type="Control" parent="CanvasLayer/TitleScreen/Layout" unique_id=1265653781]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+mouse_filter = 2
 
 [node name="Conductor" type="Node2D" parent="." unique_id=1179597022 node_paths=PackedStringArray("music_player")]
 script = ExtResource("4_xijci")

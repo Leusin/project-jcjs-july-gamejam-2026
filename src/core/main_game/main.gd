@@ -15,11 +15,12 @@ const NoteScene := preload("res://src/gameplay/note.tscn")
 @export var good_score: int = 1
 
 @export_group("생존")
-@export var max_health: int = 5
+@export var max_health: int = 3
 @export_range(0.0, 1.0) var heal_chance: float = 0.08
 @export var heal_amount: int = 1
-@export var song_duration: float = 135.0
-## 게임오버 후 이 시간이 지나야 재시작 입력을 받는다(죽인 그 탭으로 바로 재시작되는 것 방지).
+## 음악은 반복하지 않으며, 플레이는 정확히 90초에 끝난다.
+@export var song_duration: float = 90.0
+## 게임오버 후 이 시간이 지나야 결과 화면 버튼이 살아난다(죽인 그 탭으로 바로 재시작되는 것 방지).
 @export var restart_delay: float = 1.5
 
 @export_group("디버그 치트")
@@ -37,11 +38,15 @@ const NoteScene := preload("res://src/gameplay/note.tscn")
 @onready var _conductor: Conductor = $Conductor
 @onready var _chart: Chart = $Chart
 @onready var _hud: Hud = $CanvasLayer
+@onready var _debug_overlay: CanvasLayer = $DebugOverlay
 @onready var _ignite_sound: AudioStreamPlayer = $Audio/IgniteSound
 @onready var _miss_sound: AudioStreamPlayer = $Audio/MissSound
 @onready var _heal_sound: AudioStreamPlayer = $Audio/HealSound
 
+## 재시작은 씬을 통째로 다시 만들기 때문에 static인 값만 살아남는다.
 static var _seen_title: bool = false
+## 직전 판에서 고른 모드. 재시작할 때 이어받는다.
+static var _last_practice: bool = false
 
 ## 화면에 떠 있는, 아직 판정되지 않은 노트들.
 var _notes: Array[Note] = []
@@ -54,18 +59,22 @@ var _counts := { Judgement.PERFECT: 0, Judgement.GOOD: 0, Judgement.MISS: 0 }
 
 var _playing: bool = false
 var _game_over: bool = false
-var _game_over_at: float = 0.0
 
 
 func _ready() -> void:
 	_health = max_health
 
+	# FPS·버전 표시는 타이틀을 가리지 않게 두었다가 플레이가 시작되면 되돌린다.
+	_debug_overlay.visible = false
+
 	_refresh_hud()
 	_hud.start_pressed.connect(_begin_play)
+	_hud.restart_pressed.connect(_on_restart_pressed)
+	_hud.title_pressed.connect(_on_title_pressed)
 
 	if _seen_title:
 		_hud.skip_title()
-		_begin_play()
+		_begin_play(_last_practice)
 
 func _process(_delta: float) -> void:
 	if not _playing or _game_over:
@@ -80,10 +89,12 @@ func _process(_delta: float) -> void:
 
 	_drop_passed_notes()
 	_hit_point.sync_dance(_conductor.is_playing)
-	_hud.update_time_left(song_duration - _conductor.song_position)
+	_hud.update_time_left(song_duration - _conductor.song_position, song_duration)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not _playing:
+	# 게임오버 뒤의 입력은 전부 무시한다 — 재시작은 결과 화면 버튼으로만 한다.
+	# 치트 키까지 막아야 결과 화면 위로 플레이용 HUD가 되살아나지 않는다.
+	if not _playing or _game_over:
 		return
 
 	if _is_cheat_key(event):
@@ -93,24 +104,27 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if _is_tap(event):
-		if _game_over:
-			if _can_restart():
-				get_tree().reload_current_scene()
-			return
-
 		_hit_point.on_tap()
 		_judge()
 
-func _begin_play() -> void:
+func _begin_play(practice: bool) -> void:
 	_seen_title = true
+	_last_practice = practice
+	invincible = practice
 	_playing = true
+	_debug_overlay.visible = true
+	_refresh_hud()
 	_conductor.start_song()
-	_chart.begin(_conductor, start_stage)
+	_chart.begin(_conductor, start_stage, song_duration)
 
-func _can_restart() -> bool:
-	var current_time_seconds := Time.get_ticks_msec() / 1000.0
-	var time_since_game_over := current_time_seconds - _game_over_at
-	return time_since_game_over >= restart_delay
+func _on_restart_pressed(practice: bool) -> void:
+	_last_practice = practice
+	get_tree().reload_current_scene()
+
+func _on_title_pressed() -> void:
+	# 이걸 되돌려야 새 씬이 타이틀을 다시 띄운다.
+	_seen_title = false
+	get_tree().reload_current_scene()
 
 ## 가장 가까운 노트에 대한 타이밍을 판정한다.
 func _judge() -> void:
@@ -131,12 +145,10 @@ func _judge() -> void:
 
 	var is_perfect := absolute_time_difference <= perfect_window
 	if is_perfect:
-		_score += perfect_score
 		_on_success(closest_note,
 			Judgement.PERFECT,
 			signed_time_difference)
 	else:
-		_score += good_score
 		_on_success(
 			closest_note,
 			Judgement.GOOD,
@@ -208,18 +220,28 @@ func _on_success(note: Note, judgement: Judgement, signed_error: float) -> void:
 	_counts[judgement] += 1
 	_combo += 1
 	_max_combo = maxi(_max_combo, _combo)
+	var multiplier := _score_multiplier(_combo)
+	var base_score := perfect_score if judgement == Judgement.PERFECT else good_score
+	var earned_score := base_score * multiplier
+	_score += earned_score
 	if note.kind == Note.Kind.HEAL:
 		_health = mini(_health + heal_amount, max_health)
 	_refresh_hud()
 	if note.kind == Note.Kind.HEAL:
-		_hud.flash("HEAL +%d" % heal_amount, Hud.COLOR_HEAL)
+		_hud.flash("HEAL +%d" % heal_amount, Hud.COLOR_HEAL, 42)
 		_hud.pulse_health()
 	elif judgement == Judgement.PERFECT:
-		_hud.flash("PERFECT", Hud.COLOR_PERFECT)
+		_hud.flash("PERFECT", Hud.COLOR_PERFECT, 60)
 		_hit_point.on_perfect()   # 잠깐 팔다리를 흩뜨린다
 	else:
-		_hud.flash("GOOD", Hud.COLOR_GOOD)
-	print("%s  (오차 %+.3f초, 콤보 %d)" % [Judgement.keys()[judgement], signed_error, _combo])
+		_hud.flash("GOOD", Hud.COLOR_GOOD, 40)
+	print("%s +%d (배율 x%d, 오차 %+.3f초, 콤보 %d)" % [
+		Judgement.keys()[judgement],
+		earned_score,
+		multiplier,
+		signed_error,
+		_combo
+	])
 
 func _on_miss(note: Note) -> void:
 	if note.kind == Note.Kind.HEAL:
@@ -235,7 +257,7 @@ func _on_miss(note: Note) -> void:
 	_hit_point.take_damage()
 	note.fall()   # fall()이 끝나면 스스로 사라진다
 	_refresh_hud()
-	_hud.flash("MISS", Hud.COLOR_MISS)
+	_hud.flash("MISS", Hud.COLOR_MISS, 52)
 	print("MISS  (남은 체력 %d)" % _health)
 	if _health <= 0:
 		_end_game(false)
@@ -254,7 +276,7 @@ func _on_bad_tap() -> void:
 	if bad_tap_combo_penalty > 0 and _combo > 0:
 		_combo = maxi(0, _combo - bad_tap_combo_penalty)
 		_refresh_hud()
-		_hud.flash("빗나감", Hud.COLOR_WRONG)
+		_hud.flash("빗나감", Hud.COLOR_WRONG, 32)
 
 # ---------------------------------------------------------------- 승패
 
@@ -263,7 +285,8 @@ func _end_game(won: bool) -> void:
 		print("게임은 이미 종료했습니다.(_end_game)")
 		return
 	_game_over = true
-	_game_over_at = Time.get_ticks_msec() / 1000.0
+	# 타이틀과 마찬가지로 결과 화면에도 개발용 표시를 남기지 않는다.
+	_debug_overlay.visible = false
 	_conductor.stop_song()
 
 	for note in _notes:
@@ -277,14 +300,25 @@ func _end_game(won: bool) -> void:
 		_hit_point.extinguish()
 
 	var headline := "날이 밝았다" if won else "불이 꺼졌다"
-	_hud.show_result("%s\n\nSCORE %06d\n최대 콤보 %d\nPERFECT %d   GOOD %d   MISS %d\n\n탭하면 다시 시작" % [
-		headline, _score, _max_combo,
+	var stats := "SCORE %06d\nMAX COMBO %d" % [_score, _max_combo]
+	# 판정 개수는 hud가 판정 색을 입혀 따로 그린다. 연습 판이면 '연습 기록' 표시도 함께 켠다.
+	_hud.show_result(headline, stats,
 		_counts[Judgement.PERFECT],
 		_counts[Judgement.GOOD],
-		_counts[Judgement.MISS]
-	])
+		_counts[Judgement.MISS],
+		invincible, restart_delay)
 
 # ---------------------------------------------------------------- 입력·표시
+
+## 광란 연출 단계와 같은 콤보 문턱을 사용한다.
+func _score_multiplier(combo: int) -> int:
+	if combo >= 50:
+		return 4
+	if combo >= 30:
+		return 3
+	if combo >= 10:
+		return 2
+	return 1
 
 func _refresh_hud() -> void:
 	_hud.update_stats(_score, _combo, _health, max_health, invincible)
