@@ -39,6 +39,7 @@ const NoteScene := preload("res://src/gameplay/note.tscn")
 @onready var _chart: Chart = $Chart
 @onready var _hud: Hud = $CanvasLayer
 @onready var _debug_overlay: CanvasLayer = $DebugOverlay
+@onready var _title_neon_hum: AudioStreamPlayer = $Audio/TitleNeonHum
 @onready var _ignite_sound: AudioStreamPlayer = $Audio/IgniteSound
 @onready var _miss_sound: AudioStreamPlayer = $Audio/MissSound
 @onready var _heal_sound: AudioStreamPlayer = $Audio/HealSound
@@ -75,6 +76,11 @@ func _ready() -> void:
 	if _seen_title:
 		_hud.skip_title()
 		_begin_play(_last_practice)
+	else:
+		var neon_stream := _title_neon_hum.stream as AudioStreamMP3
+		if neon_stream != null:
+			neon_stream.loop = true
+		_title_neon_hum.play()
 
 func _process(_delta: float) -> void:
 	if not _playing or _game_over:
@@ -109,6 +115,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _begin_play(practice: bool) -> void:
 	_seen_title = true
+	_title_neon_hum.stop()
 	_last_practice = practice
 	invincible = practice
 	_playing = true

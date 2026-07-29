@@ -31,6 +31,7 @@ const HEAD_DEAD := Color(0.36, 0.30, 0.39, 1)
 @onready var _judgement_label: Label = $JudgementLabel
 
 @onready var _title_screen: Control = $TitleScreen
+@onready var _subtitle_label: Label = $TitleScreen/Layout/SubtitleLabel
 @onready var _start_button: Button = $TitleScreen/Layout/StartButton
 @onready var _practice_check: CheckBox = $TitleScreen/Layout/PracticeCheck
 
@@ -45,6 +46,7 @@ const HEAD_DEAD := Color(0.36, 0.30, 0.39, 1)
 
 var _flash_tween: Tween
 var _health_tween: Tween
+var _subtitle_tween: Tween
 var _flames: Array[TextureRect] = []
 ## 타이틀·결과 화면에서는 false. update_stats가 숨긴 HUD를 되살리지 않게 한다.
 var _game_hud_shown: bool = false
@@ -59,6 +61,7 @@ func _ready() -> void:
 	_restart_button.pressed.connect(_on_restart_pressed)
 	_title_button.pressed.connect(_on_title_pressed)
 	_set_game_hud_visible(false)
+	pulse_subtitle()
 
 
 func _on_start_pressed() -> void:
@@ -86,6 +89,8 @@ func _hide_title() -> void:
 	_practice_check.release_focus()
 	_title_screen.visible = false
 	_set_game_hud_visible(true)
+	if _subtitle_tween != null and _subtitle_tween.is_valid():
+		_subtitle_tween.kill()
 
 
 func _set_game_hud_visible(shown: bool) -> void:
@@ -138,6 +143,21 @@ func pulse_health() -> void:
 	_health_box.modulate = COLOR_HEAL_ACCENT
 	_health_tween = create_tween()
 	_health_tween.tween_property(_health_box, "modulate", Color.WHITE, 0.5)
+
+
+func pulse_subtitle() -> void:
+	_subtitle_label.offset_transform_pivot_ratio = Vector2(0.5, 0.5)
+	if _subtitle_tween != null and _subtitle_tween.is_valid():
+		_subtitle_tween.kill()
+	_subtitle_tween = create_tween().set_loops()
+	_subtitle_tween.tween_property(
+		_subtitle_label,
+		"offset_transform_scale",
+		Vector2(1.06, 1.06), 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_subtitle_tween.tween_property(
+		_subtitle_label,
+		"offset_transform_scale",
+		Vector2.ONE, 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 ## `practice`는 방금 친 판의 모드이며 다음 판 체크박스의 초기값이 된다.
