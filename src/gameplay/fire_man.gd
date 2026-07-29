@@ -10,14 +10,14 @@ extends Marker2D
 
 const FRENZY_LIGHT_COLORS: Array[Color] = [
 	Color("ffd35c"),
-	Color("ff4fbd"),
-	Color("b8ff1a"),
-	Color("ff552b"),
+	Color("ffe178"),
+	Color("ffefad"),
+	Color("fff9e8"),
 ]
-const FRENZY_LIGHT_SCALES: Array[float] = [1.0, 1.12, 1.28, 1.48]
-const FRENZY_FLICKER_FAST: Array[float] = [0.04, 0.06, 0.08, 0.11]
-const FRENZY_FLICKER_SLOW: Array[float] = [0.08, 0.10, 0.14, 0.20]
-const FRENZY_FLICKER_SPEED: Array[float] = [1.0, 1.15, 1.4, 1.75]
+const FRENZY_LIGHT_SCALES: Array[float] = [1.0, 1.25, 1.55, 1.9]
+const FRENZY_FLICKER_FAST: Array[float] = [0.04, 0.08, 0.12, 0.05]
+const FRENZY_FLICKER_SLOW: Array[float] = [0.08, 0.14, 0.20, 0.10]
+const FRENZY_FLICKER_SPEED: Array[float] = [1.0, 1.25, 1.65, 1.15]
 
 @export_group("춤")
 @export var dance_animations: Array[StringName] = [

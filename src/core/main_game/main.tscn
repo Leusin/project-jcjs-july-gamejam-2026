@@ -16,6 +16,7 @@
 [ext_resource type="Texture2D" uid="uid://hyiqj2vfflrw" path="res://assets/ui/check_checked.svg" id="14_check_on"]
 [ext_resource type="Texture2D" uid="uid://n8fu15g7j7kq" path="res://assets/ui/check_unchecked.svg" id="15_check_off"]
 [ext_resource type="Texture2D" uid="uid://bigexvh7il867" path="res://assets/sprites/fire_man_head_1.png" id="16_head"]
+[ext_resource type="Script" uid="uid://clpr735agcqks" path="res://src/visual/frenzy_fx.gd" id="17_frenzy_fx"]
 
 [sub_resource type="GDScript" id="GDScript_8l6nt"]
 script/source = "extends Node2D
@@ -144,6 +145,9 @@ data = PackedByteArray("//vUZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMu
 [node name="Main" type="Node2D" unique_id=1968898500]
 script = ExtResource("1_8jwtq")
 
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2064177104]
+position = Vector2(640, 360)
+
 [node name="BackgroundLayer" type="CanvasLayer" parent="." unique_id=470207705]
 layer = -100
 
@@ -183,6 +187,11 @@ position = Vector2(640, 720)
 
 [node name="Chart" type="Node" parent="." unique_id=1520043775]
 script = ExtResource("6_chart")
+
+[node name="FrenzyFX" type="Node2D" parent="." unique_id=1278678081]
+z_index = -2
+position = Vector2(640, 360)
+script = ExtResource("17_frenzy_fx")
 
 [node name="JudgementOverlay" type="Node2D" parent="." unique_id=1520043776]
 z_index = 20
@@ -495,15 +504,32 @@ modulate = Color(1, 1, 0.2784314, 1)
 layout_mode = 2
 offset_transform_enabled = true
 theme_override_font_sizes/font_size = 26
-text = "박자에 맞춰 나방을 불꽃으로 이끄세요"
+text = "박자에 맞춰 나방을 불꽃으로 이끌어요!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="FireManSpace" type="Control" parent="CanvasLayer/TitleScreen/Layout" unique_id=1520043788]
-custom_minimum_size = Vector2(0, 240)
+custom_minimum_size = Vector2(0, 200)
 propagate_maximum_size = true
 layout_mode = 2
 mouse_filter = 2
+
+[node name="PhotosensitivityWarning" type="Label" parent="CanvasLayer/TitleScreen/Layout/FireManSpace" unique_id=2042454756]
+layout_mode = 0
+offset_top = 23.0
+offset_right = 1280.0
+offset_bottom = 171.0
+theme_override_colors/font_color = Color(0.62, 0.58, 0.61, 1)
+theme_override_font_sizes/font_size = 15
+text = "※ 광과민성 주의※
+
+
+
+
+
+ 밝은 빛과 화면 흔들림이 포함되어 있습니다"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="StartButton" type="Button" parent="CanvasLayer/TitleScreen/Layout" unique_id=1520043784]
 custom_minimum_size = Vector2(280, 72)

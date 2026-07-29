@@ -18,15 +18,15 @@ const COLOR_HEAL := Color("f6f0ff")
 const COLOR_HEAL_ACCENT := Color("ff4f70")
 const FRENZY_COMBO_COLORS: Array[Color] = [
 	Color("f2e8d5"),
-	Color("ff4fbd"),
-	Color("b8ff1a"),
-	Color("ff6b2c"),
+	Color("ffe178"),
+	Color("ffefad"),
+	Color("fff9e8"),
 ]
 const FRENZY_CAPTION_COLORS: Array[Color] = [
 	Color("9b9096"),
-	Color("d75aa8"),
-	Color("87b83e"),
-	Color("d95838"),
+	Color("b7a46e"),
+	Color("cabf94"),
+	Color("ddd8cb"),
 ]
 
 ## 꺼진 체력은 같은 머리 스프라이트를 재처럼 식힌 색으로 표시한다.
@@ -131,7 +131,7 @@ func update_stats(score: int, combo: int,
 	_combo_label.text = "x%d" % combo
 	_practice_badge.visible = _game_hud_shown and invincible
 	if combo > _last_combo and _frenzy_stage > 0 and not _skip_next_combo_pulse:
-		_pulse_combo(1.04 + _frenzy_stage * 0.025)
+		_pulse_combo(1.07 + _frenzy_stage * 0.035)
 	_skip_next_combo_pulse = false
 	_last_combo = combo
 
@@ -149,7 +149,7 @@ func set_frenzy_stage(stage: int, rising: bool) -> void:
 	_combo_caption.add_theme_color_override("font_color", FRENZY_CAPTION_COLORS[stage])
 	if rising and _game_hud_shown:
 		_skip_next_combo_pulse = true
-		_pulse_combo(1.12 + stage * 0.06)
+		_pulse_combo(1.18 + stage * 0.08)
 
 
 func _pulse_combo(amount: float) -> void:

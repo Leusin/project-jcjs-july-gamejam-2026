@@ -7,12 +7,12 @@ enum FrenzyStage { NORMAL, IGNITED, FRENZY, DEIFIED }
 const NoteScene := preload("res://src/gameplay/note.tscn")
 const FRENZY_BACKGROUND_COLORS: Array[Color] = [
 	Color("171320"),
-	Color("210d2a"),
-	Color("132211"),
-	Color("2a0b12"),
+	Color("1d1828"),
+	Color("241e31"),
+	Color("2c243b"),
 ]
-const FRENZY_BREATH_AMOUNTS: Array[float] = [0.0, 0.035, 0.06, 0.09]
-const FRENZY_BREATH_SPEEDS: Array[float] = [0.0, 1.4, 2.1, 3.0]
+const FRENZY_BREATH_AMOUNTS: Array[float] = [0.0, 0.06, 0.10, 0.07]
+const FRENZY_BREATH_SPEEDS: Array[float] = [0.0, 1.6, 2.5, 1.8]
 
 @export_group("판정 (초 단위 오차 허용범위)")
 @export var perfect_window: float = 0.07
@@ -49,7 +49,8 @@ const FRENZY_BREATH_SPEEDS: Array[float] = [0.0, 1.4, 2.1, 3.0]
 @onready var _hud: Hud = $CanvasLayer
 @onready var _debug_overlay: CanvasLayer = $DebugOverlay
 @onready var _night_color: ColorRect = $BackgroundLayer/NightColor
-@onready var _background_passers: BackgroundPassers = $BackgroundPassers
+@onready var _frenzy_fx: FrenzyFX = $FrenzyFX
+@onready var _camera: Camera2D = $Camera2D
 @onready var _title_neon_hum: AudioStreamPlayer = $Audio/TitleNeonHum
 @onready var _ignite_sound: AudioStreamPlayer = $Audio/IgniteSound
 @onready var _miss_sound: AudioStreamPlayer = $Audio/MissSound
@@ -75,6 +76,7 @@ var _frenzy_stage: int = FrenzyStage.NORMAL
 var _frenzy_color: Color = FRENZY_BACKGROUND_COLORS[FrenzyStage.NORMAL]
 var _frenzy_clock: float = 0.0
 var _frenzy_color_tween: Tween
+var _combo_break_shake_tween: Tween
 
 
 func _ready() -> void:
@@ -251,6 +253,7 @@ func _on_success(note: Note, judgement: Judgement, signed_error: float) -> void:
 	if note.kind == Note.Kind.HEAL:
 		_health = mini(_health + heal_amount, max_health)
 	_refresh_hud()
+	_frenzy_fx.on_hit(judgement == Judgement.PERFECT)
 	if note.kind == Note.Kind.HEAL:
 		_hud.flash("HEAL +%d" % heal_amount, Hud.COLOR_HEAL, 42)
 		_hud.pulse_health()
@@ -275,7 +278,10 @@ func _on_miss(note: Note) -> void:
 	_miss_sound.play()
 
 	_counts[Judgement.MISS] += 1
+	var broken_combo := _combo
 	_combo = 0
+	if broken_combo >= 10:
+		_shake_combo_break(broken_combo)
 	if not invincible:
 		_health -= 1
 	_hit_point.take_damage()
@@ -285,6 +291,27 @@ func _on_miss(note: Note) -> void:
 	print("MISS  (남은 체력 %d)" % _health)
 	if _health <= 0:
 		_end_game(false)
+
+
+func _shake_combo_break(broken_combo: int) -> void:
+	if _combo_break_shake_tween != null and _combo_break_shake_tween.is_valid():
+		_combo_break_shake_tween.kill()
+	var strength := clampf(6.0 + broken_combo * 0.12, 6.0, 14.0)
+	_camera.offset = Vector2.ZERO
+	_combo_break_shake_tween = create_tween()
+	for direction in [
+		Vector2(1.0, -0.55),
+		Vector2(-0.8, 0.48),
+		Vector2(0.52, -0.28),
+		Vector2.ZERO,
+	]:
+		_combo_break_shake_tween.tween_property(
+			_camera,
+			"offset",
+			direction * strength,
+			0.03
+		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
 
 ## 칠 노트가 없을 때 누른 입력. 체력은 깎지 않고 콤보만 끊는다.
 func _on_bad_tap() -> void:
@@ -298,7 +325,10 @@ func _on_bad_tap() -> void:
 
 	# 이미 0인 콤보를 또 깎았다고 알리지 않는다
 	if bad_tap_combo_penalty > 0 and _combo > 0:
+		var combo_before_penalty := _combo
 		_combo = maxi(0, _combo - bad_tap_combo_penalty)
+		if _combo == 0 and combo_before_penalty >= 10:
+			_shake_combo_break(combo_before_penalty)
 		_refresh_hud()
 		_hud.flash("빗나감", Hud.COLOR_WRONG, 32)
 
@@ -364,7 +394,7 @@ func _update_frenzy_stage() -> void:
 	_frenzy_stage = next_stage
 	_hud.set_frenzy_stage(next_stage, next_stage > previous_stage)
 	_hit_point.set_frenzy_stage(next_stage)
-	_background_passers.set_frenzy_stage(next_stage)
+	_frenzy_fx.set_frenzy_stage(next_stage)
 
 	if _frenzy_color_tween != null and _frenzy_color_tween.is_valid():
 		_frenzy_color_tween.kill()
