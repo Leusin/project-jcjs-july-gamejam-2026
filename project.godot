@@ -10,12 +10,17 @@ config_version=5
 
 [application]
 
-config/name="project jul jam 2026"
-config/version="0.2.0"
+config/name="나방과 함께 춤을"
+config/description="박자에 맞춰 나방을 불꽃으로 이끄는 원버튼 리듬 아케이드."
+config/version="1.0.0"
 run/main_scene="uid://bcyium1l4ty04"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.png"
 config/windows_native_icon="res://icon.ico"
+boot_splash/bg_color=Color(0.070588, 0.023529, 0.121569, 1)
+boot_splash/image="res://icon.png"
+boot_splash/fullsize=false
+boot_splash/use_filter=true
 
 [display]
 
@@ -23,6 +28,11 @@ window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 
+[gui]
+
+theme/custom_font="uid://ckowrdor4snvy"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.070588, 0.023529, 0.121569, 1)

@@ -51,7 +51,6 @@ const FRENZY_BREATH_SPEEDS: Array[float] = [0.0, 1.6, 2.5, 1.8]
 @onready var _night_color: ColorRect = $BackgroundLayer/NightColor
 @onready var _frenzy_fx: FrenzyFX = $FrenzyFX
 @onready var _camera: Camera2D = $Camera2D
-@onready var _title_neon_hum: AudioStreamPlayer = $Audio/TitleNeonHum
 @onready var _ignite_sound: AudioStreamPlayer = $Audio/IgniteSound
 @onready var _miss_sound: AudioStreamPlayer = $Audio/MissSound
 @onready var _heal_sound: AudioStreamPlayer = $Audio/HealSound
@@ -93,11 +92,6 @@ func _ready() -> void:
 	if _seen_title:
 		_hud.skip_title()
 		_begin_play(_last_practice)
-	else:
-		var neon_stream := _title_neon_hum.stream as AudioStreamMP3
-		if neon_stream != null:
-			neon_stream.loop = true
-		_title_neon_hum.play()
 
 func _process(delta: float) -> void:
 	if not _playing or _game_over:
@@ -134,11 +128,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _begin_play(practice: bool) -> void:
 	_seen_title = true
-	_title_neon_hum.stop()
 	_last_practice = practice
 	invincible = practice
 	_playing = true
-	_debug_overlay.visible = true
+	# FPS·버전은 개발용 표시라 릴리스 빌드(웹 배포본)에서는 끝까지 숨긴다.
+	_debug_overlay.visible = OS.is_debug_build()
 	_refresh_hud()
 	_conductor.start_song()
 	_chart.begin(_conductor, start_stage, song_duration)

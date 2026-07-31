@@ -5,12 +5,12 @@ extends Sprite2D
 
 const FRENZY_COLORS: Array[Color] = [
 	Color(0.38, 0.30, 0.72, 0.14),
-	Color(0.72, 0.18, 0.86, 0.22),
-	Color(0.55, 0.88, 0.20, 0.28),
-	Color(1.00, 0.22, 0.12, 0.34),
+	Color(0.46, 0.37, 0.82, 0.26),
+	Color(0.58, 0.48, 0.92, 0.40),
+	Color(0.72, 0.63, 1.00, 0.56),
 ]
-const FRENZY_SPEEDS: Array[float] = [1.0, 1.18, 1.42, 1.8]
-const FRENZY_WOBBLES: Array[float] = [1.0, 1.2, 1.5, 1.9]
+const FRENZY_SPEEDS: Array[float] = [1.0, 1.3, 1.8, 2.5]
+const FRENZY_WOBBLES: Array[float] = [1.0, 1.3, 1.75, 2.3]
 
 @export var speed: float = 72.0
 @export var wrap_margin: float = 260.0
